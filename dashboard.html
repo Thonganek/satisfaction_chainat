@@ -2443,6 +2443,31 @@ function isRestricted(payload){
   return !payload || payload.restricted === true;
 }
 
+// Second line of defence. The Web App already strips names and comments
+// for anonymous callers, but enforcing it here as well means nothing
+// personal is ever rendered without a session, whatever the server sends.
+function enforceRestriction(data,credentials){
+  if(!data || credentials){
+    return data;
+  }
+
+  const comments = data.comments || {};
+
+  data.commentCounts = data.commentCounts || {
+    strengths:(comments.strengths || []).length,
+    problems:(comments.problems || []).length,
+    suggestions:(comments.suggestions || []).length
+  };
+  data.comments = {strengths:[],problems:[],suggestions:[]};
+  data.recentResponses = (data.recentResponses || []).map(row => Object.assign({},row,{
+    name:"ผู้ตอบแบบประเมิน",
+    suggestion:""
+  }));
+  data.restricted = true;
+
+  return data;
+}
+
 async function loadDashboard(){
   const credentials = getCredentials();
 
@@ -2452,7 +2477,7 @@ async function loadDashboard(){
   setStatus("กำลังโหลดข้อมูลจากชีต Responses...");
 
   try{
-    const data = await requestDashboard(credentials);
+    const data = enforceRestriction(await requestDashboard(credentials),credentials);
 
     // A stored session that no longer works quietly drops back to the
     // public view rather than showing stale private data.
@@ -3610,7 +3635,7 @@ function buildDocumentXml(dashboard){
     ].forEach(block => {
       body.push(heading(block.title,2));
       if(block.list.length){
-        block.list.forEach((item,index) => body.push(bulletText(index + 1,`${item.text} (${item.name})`)));
+        block.list.forEach((item,index) => body.push(bulletText(index + 1,item.text)));
       }else{
         body.push(bodyText("ไม่มีผู้แสดงความคิดเห็นในหัวข้อนี้"));
       }
