@@ -1571,11 +1571,6 @@ html[data-theme="light"]{
 /* ============================================================
    LOGIN GATE
    ============================================================ */
-body.locked .navbar,
-body.locked .page,
-body.locked .to-top,
-body.locked .progress-rail{display:none}
-
 .gate{
   position:fixed;
   inset:0;
@@ -1583,14 +1578,108 @@ body.locked .progress-rail{display:none}
   display:grid;
   place-items:center;
   padding:20px;
-  background:
-    radial-gradient(90% 70% at 50% 0%,var(--glow),transparent 60%),
-    var(--bg);
-  opacity:1;
-  transition:opacity .45s var(--ease),visibility .45s;
+  background:rgba(4,24,14,.52);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .35s var(--ease),visibility .35s;
 }
 
-.gate.hidden{opacity:0;visibility:hidden}
+.gate.open{opacity:1;visibility:visible}
+
+.gate-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:11px;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+}
+
+.gate-close:hover{color:var(--ink);background:var(--glass)}
+
+.gate-close svg{
+  width:17px;
+  height:17px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+}
+
+.gate-card{position:relative}
+
+/* locked panels */
+.locked-note{
+  display:grid !important;
+  justify-items:center;
+  gap:11px;
+  padding:26px 18px !important;
+  text-align:center;
+  border-style:dashed !important;
+  background:var(--glass) !important;
+}
+
+.locked-note svg{
+  width:26px;
+  height:26px;
+  stroke:var(--accent);
+  fill:none;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.locked-note span{color:var(--muted);font-size:.86rem;font-weight:500;line-height:1.6}
+.locked-note b{color:var(--ink);font-family:var(--font-num)}
+.locked-note .button{min-height:38px;padding:7px 16px;font-size:.83rem}
+
+.masked{
+  color:var(--muted);
+  letter-spacing:2px;
+  font-family:var(--font-num);
+}
+
+.notice{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:16px 0 0;
+  padding:14px 18px;
+  border:1px dashed var(--line-strong);
+  border-radius:var(--r-lg);
+  background:var(--glass);
+  color:var(--muted);
+  font-size:.87rem;
+  font-weight:500;
+}
+
+.notice svg{
+  width:19px;
+  height:19px;
+  flex:0 0 auto;
+  stroke:var(--accent);
+  fill:none;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.notice .button{margin-left:auto;min-height:38px;padding:7px 16px;font-size:.83rem}
+.notice.hidden{display:none}
+
+@media (max-width:620px){
+  .notice{padding:13px 14px}
+  .notice .button{margin-left:0;width:100%}
+}
 
 .gate-card{
   width:min(420px,100%);
@@ -1741,15 +1830,18 @@ body.locked .progress-rail{display:none}
 }
 </style>
 </head>
-<body class="is-loading locked">
+<body class="is-loading">
 
 <div id="gate" class="gate">
   <form id="gateForm" class="gate-card" autocomplete="off">
+    <button id="gateClose" class="gate-close" type="button" aria-label="ปิด">
+      <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
     <div class="gate-mark">
       <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
     </div>
     <h1>เข้าสู่ระบบ</h1>
-    <p class="sub">Dashboard นี้แสดงข้อมูลผู้ตอบ ความคิดเห็น และชื่อผู้แสดงความคิดเห็น<br>ระบบตรวจสอบสิทธิ์ที่เซิร์ฟเวอร์ก่อนส่งข้อมูล</p>
+    <p class="sub">สถิติทั้งหมดเปิดให้ดูได้โดยไม่ต้องเข้าสู่ระบบ<br>เข้าสู่ระบบเพื่อดูชื่อผู้ตอบและความคิดเห็นปลายเปิด</p>
 
     <div class="gate-field">
       <label for="gateUser">
@@ -1779,7 +1871,7 @@ body.locked .progress-rail{display:none}
       <span id="gateSubmitText">เข้าสู่ระบบ</span>
     </button>
 
-    <p class="gate-note">ผู้ตอบแบบประเมินไม่ต้องเข้าสู่ระบบ · <a id="gateFormLink" href="index.html">ไปที่แบบประเมิน</a></p>
+    <p class="gate-note">ระบบตรวจสอบสิทธิ์ที่เซิร์ฟเวอร์ · <a id="gateFormLink" href="index.html">ไปที่แบบประเมิน</a></p>
   </form>
 </div>
 
@@ -1812,6 +1904,10 @@ body.locked .progress-rail{display:none}
     <div class="nav-actions">
       <button id="themeToggle" class="button icon" type="button" title="สลับธีมสว่าง/มืด" aria-label="สลับธีม">
         <svg class="ico" id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button id="loginButton" class="button" type="button" title="เข้าสู่ระบบเพื่อดูชื่อและความคิดเห็น">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span>เข้าสู่ระบบ</span>
       </button>
       <button id="logoutButton" class="button icon" type="button" title="ออกจากระบบ" aria-label="ออกจากระบบ">
         <svg class="ico" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
@@ -1909,6 +2005,12 @@ body.locked .progress-rail{display:none}
     </article>
   </section>
 
+  <div id="restrictedNotice" class="notice hidden">
+    <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <span>กำลังดูแบบไม่ระบุตัวตน — ชื่อผู้ตอบและความคิดเห็นปลายเปิดถูกซ่อนไว้</span>
+    <button class="button" type="button" data-login>เข้าสู่ระบบเพื่อดู</button>
+  </div>
+
   <section id="executive" class="section reveal">
     <div class="section-head">
       <div class="section-title">
@@ -1922,6 +2024,10 @@ body.locked .progress-rail{display:none}
         <button id="copyExecutiveButton" class="button" type="button">
           <svg class="ico" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           <span>คัดลอกสรุป</span>
+        </button>
+        <button id="exportDocxButton" class="button primary" type="button">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+          <span>ดาวน์โหลดรายงาน DOCX</span>
         </button>
       </div>
     </div>
@@ -2126,6 +2232,10 @@ const refs = {
   gateToggle:document.getElementById("gateToggle"),
   gateError:document.getElementById("gateError"),
   gateSubmit:document.getElementById("gateSubmit"),
+  gateClose:document.getElementById("gateClose"),
+  loginButton:document.getElementById("loginButton"),
+  restrictedNotice:document.getElementById("restrictedNotice"),
+  exportDocxButton:document.getElementById("exportDocxButton"),
   gateSubmitText:document.getElementById("gateSubmitText"),
   gateFormLink:document.getElementById("gateFormLink"),
   logoutButton:document.getElementById("logoutButton"),
@@ -2263,8 +2373,8 @@ async function loadDashboardPost(url,credentials){
     headers:{"Content-Type":"text/plain;charset=utf-8"},
     body:JSON.stringify({
       action:"dashboard",
-      user:credentials.user,
-      token:credentials.token
+      user:credentials ? credentials.user : "",
+      token:credentials ? credentials.token : ""
     })
   });
 
@@ -2298,8 +2408,8 @@ function loadDashboardJsonp(url,credentials){
     const endpoint = new URL(url,location.href);
     endpoint.searchParams.set("action","dashboard");
     endpoint.searchParams.set("callback",callbackName);
-    endpoint.searchParams.set("user",credentials.user);
-    endpoint.searchParams.set("token",credentials.token);
+    endpoint.searchParams.set("user",credentials ? credentials.user : "");
+    endpoint.searchParams.set("token",credentials ? credentials.token : "");
     script.src = endpoint.toString();
     script.onerror = () => {
       cleanup();
@@ -2329,17 +2439,12 @@ async function requestDashboard(credentials){
   }
 }
 
-function isUnauthorized(payload){
-  return !payload || payload.status === "unauthorized";
+function isRestricted(payload){
+  return !payload || payload.restricted === true;
 }
 
 async function loadDashboard(){
   const credentials = getCredentials();
-
-  if(!credentials){
-    lockDashboard();
-    return;
-  }
 
   refs.refreshButton.disabled = true;
   refs.refreshButton.classList.add("loading");
@@ -2349,12 +2454,10 @@ async function loadDashboard(){
   try{
     const data = await requestDashboard(credentials);
 
-    if(isUnauthorized(data)){
+    // A stored session that no longer works quietly drops back to the
+    // public view rather than showing stale private data.
+    if(credentials && isRestricted(data)){
       storeCredentials(null);
-      document.body.classList.remove("is-loading");
-      renderDashboard(createEmptyDashboard());
-      lockDashboard("เซสชันหมดอายุหรือรหัสผ่านถูกเปลี่ยน กรุณาเข้าสู่ระบบอีกครั้ง");
-      return;
     }
 
     state.dashboard = data;
@@ -2431,6 +2534,7 @@ function renderDashboard(data){
   setBarWidth(refs.positiveBar,Math.min(100,positive));
   renderSpark(dashboard);
 
+  updateAccessUi(dashboard);
   renderExecutive(dashboard.executiveSummary);
   renderOverview(dashboard);
   renderChapter4(dashboard.chapter4);
@@ -2657,18 +2761,21 @@ function renderTables(dashboard){
 
 function renderComments(dashboard){
   const comments = dashboard.comments || {};
-  renderCommentList(refs.strengthComments,comments.strengths || []);
-  renderCommentList(refs.problemComments,comments.problems || []);
-  renderCommentList(refs.suggestionComments,comments.suggestions || []);
+  const counts = dashboard.commentCounts || {};
+  const locked = dashboard.restricted === true;
+
+  renderCommentList(refs.strengthComments,comments.strengths || [],locked,counts.strengths);
+  renderCommentList(refs.problemComments,comments.problems || [],locked,counts.problems);
+  renderCommentList(refs.suggestionComments,comments.suggestions || [],locked,counts.suggestions);
   refs.recentTable.innerHTML = (dashboard.recentResponses || []).length
     ? dashboard.recentResponses.map(row => `
       <tr>
         <td class="num">${escapeHtml(row.timestamp)}</td>
-        <td>${escapeHtml(row.name)}</td>
+        <td>${dashboard.restricted ? '<span class="masked">•••••</span>' : escapeHtml(row.name)}</td>
         <td>${escapeHtml(row.unit)}</td>
         <td class="num">${fixed(row.average)}</td>
         <td>${levelBadge(row.level)}</td>
-        <td>${escapeHtml(row.suggestion || "-")}</td>
+        <td>${dashboard.restricted ? '<span class="masked">•••••</span>' : escapeHtml(row.suggestion || "-")}</td>
       </tr>
     `).join("")
     : `<tr><td colspan="6"><p class="empty">ยังไม่มีข้อมูล</p></td></tr>`;
@@ -2745,7 +2852,19 @@ function renderDemographics(demographics){
   }).join("");
 }
 
-function renderCommentList(target,items){
+function renderCommentList(target,items,locked,count){
+  if(locked){
+    const total = Number(count || 0);
+    target.innerHTML = `
+      <li class="locked-note">
+        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span>${total ? `มีความคิดเห็น <b>${numberText(total)}</b> รายการ` : "ยังไม่มีความคิดเห็น"}<br>เข้าสู่ระบบเพื่อดูเนื้อหาและชื่อผู้แสดงความคิดเห็น</span>
+        <button class="button" type="button" data-login>เข้าสู่ระบบ</button>
+      </li>
+    `;
+    return;
+  }
+
   target.innerHTML = items.length
     ? items.map(item => `
       <li>
@@ -2754,6 +2873,13 @@ function renderCommentList(target,items){
       </li>
     `).join("")
     : `<li><p class="empty" style="padding:8px">ยังไม่มีความคิดเห็น</p></li>`;
+}
+
+function updateAccessUi(dashboard){
+  const locked = dashboard.restricted === true;
+  refs.restrictedNotice.classList.toggle("hidden",!locked);
+  refs.loginButton.style.display = locked ? "" : "none";
+  refs.logoutButton.style.display = locked ? "none" : "";
 }
 
 /* ============================================================
@@ -3072,28 +3198,17 @@ function storeCredentials(credentials){
   }
 }
 
-function unlockDashboard(instant){
-  document.body.classList.remove("locked");
-
-  if(instant){
-    refs.gate.style.display = "none";
-    refs.gate.classList.add("hidden");
-    return;
-  }
-
-  refs.gate.classList.add("hidden");
-  window.setTimeout(() => {
-    refs.gate.style.display = "none";
-  },500);
-}
-
-function lockDashboard(message){
-  document.body.classList.add("locked");
-  refs.gate.style.display = "";
-  refs.gate.classList.remove("hidden");
+function openGate(message){
+  refs.gate.classList.add("open");
   refs.gateError.textContent = message || "";
   refs.gatePass.value = "";
-  refs.gateUser.focus();
+  window.setTimeout(() => refs.gateUser.focus(),120);
+}
+
+function closeGate(){
+  refs.gate.classList.remove("open");
+  refs.gateError.textContent = "";
+  refs.gatePass.value = "";
 }
 
 function setGateBusy(busy){
@@ -3129,7 +3244,7 @@ async function handleGateSubmit(event){
   try{
     const data = await requestDashboard(credentials);
 
-    if(isUnauthorized(data)){
+    if(isRestricted(data)){
       rejectLogin("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
       return;
     }
@@ -3139,8 +3254,8 @@ async function handleGateSubmit(event){
     document.body.classList.remove("is-loading");
     renderDashboard(data);
     setStatus(`Dashboard อัปเดตแล้ว ${data.updatedAt || ""}`,"success");
-    unlockDashboard();
-    showToast("เข้าสู่ระบบสำเร็จ");
+    closeGate();
+    showToast("เข้าสู่ระบบสำเร็จ แสดงชื่อและความคิดเห็นแล้ว");
   }catch(error){
     rejectLogin("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
   }finally{
@@ -3150,31 +3265,428 @@ async function handleGateSubmit(event){
 
 function logout(){
   storeCredentials(null);
-  state.dashboard = null;
-  renderDashboard(createEmptyDashboard());
-  setStatus("");
-  lockDashboard("ออกจากระบบเรียบร้อยแล้ว");
+  showToast("ออกจากระบบแล้ว");
+  loadDashboard();
 }
 
 function setupGate(){
   refs.gateFormLink.href = isAppsScriptHost() ? "?" : "index.html";
   refs.gateForm.addEventListener("submit",handleGateSubmit);
   refs.logoutButton.addEventListener("click",logout);
+  refs.loginButton.addEventListener("click",() => openGate());
+  refs.gateClose.addEventListener("click",closeGate);
+
+  refs.gate.addEventListener("click",event => {
+    if(event.target === refs.gate){
+      closeGate();
+    }
+  });
+
+  document.addEventListener("keydown",event => {
+    if(event.key === "Escape" && refs.gate.classList.contains("open")){
+      closeGate();
+    }
+  });
+
+  // every "เข้าสู่ระบบ" button rendered inside the panels
+  document.addEventListener("click",event => {
+    const trigger = event.target.closest ? event.target.closest("[data-login]") : null;
+    if(trigger){
+      openGate();
+    }
+  });
+
   refs.gateToggle.addEventListener("click",() => {
     const showing = refs.gatePass.type === "text";
     refs.gatePass.type = showing ? "password" : "text";
     refs.gateToggle.setAttribute("aria-label",showing ? "แสดงรหัสผ่าน" : "ซ่อนรหัสผ่าน");
     refs.gatePass.focus();
   });
+}
 
-  if(getCredentials()){
-    unlockDashboard(true);
-    loadDashboard();
+
+/* ============================================================
+   DOCX EXPORT
+   ------------------------------------------------------------
+   Writes a real OOXML .docx by hand: the pieces are plain XML
+   collected into a store-only ZIP, so the page stays self-contained
+   with no external library.
+   ============================================================ */
+const CRC_TABLE = (() => {
+  const table = new Uint32Array(256);
+
+  for(let i = 0;i < 256;i += 1){
+    let value = i;
+    for(let bit = 0;bit < 8;bit += 1){
+      value = value & 1 ? (0xEDB88320 ^ (value >>> 1)) : (value >>> 1);
+    }
+    table[i] = value >>> 0;
+  }
+
+  return table;
+})();
+
+function crc32(bytes){
+  let crc = 0xFFFFFFFF;
+
+  for(let i = 0;i < bytes.length;i += 1){
+    crc = CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+  }
+
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function zipStore(files){
+  const encoder = new TextEncoder();
+  const parts = [];
+  const central = [];
+  let offset = 0;
+
+  files.forEach(file => {
+    const name = encoder.encode(file.name);
+    const data = encoder.encode(file.content);
+    const crc = crc32(data);
+
+    const local = new Uint8Array(30 + name.length);
+    const localView = new DataView(local.buffer);
+    localView.setUint32(0,0x04034b50,true);
+    localView.setUint16(4,20,true);
+    localView.setUint16(6,0x0800,true);
+    localView.setUint16(8,0,true);
+    localView.setUint32(14,crc,true);
+    localView.setUint32(18,data.length,true);
+    localView.setUint32(22,data.length,true);
+    localView.setUint16(26,name.length,true);
+    local.set(name,30);
+
+    const entry = new Uint8Array(46 + name.length);
+    const entryView = new DataView(entry.buffer);
+    entryView.setUint32(0,0x02014b50,true);
+    entryView.setUint16(4,20,true);
+    entryView.setUint16(6,20,true);
+    entryView.setUint16(8,0x0800,true);
+    entryView.setUint16(10,0,true);
+    entryView.setUint32(16,crc,true);
+    entryView.setUint32(20,data.length,true);
+    entryView.setUint32(24,data.length,true);
+    entryView.setUint16(28,name.length,true);
+    entryView.setUint32(42,offset,true);
+    entry.set(name,46);
+
+    parts.push(local,data);
+    central.push(entry);
+    offset += local.length + data.length;
+  });
+
+  const centralSize = central.reduce((total,entry) => total + entry.length,0);
+  const end = new Uint8Array(22);
+  const endView = new DataView(end.buffer);
+  endView.setUint32(0,0x06054b50,true);
+  endView.setUint16(8,files.length,true);
+  endView.setUint16(10,files.length,true);
+  endView.setUint32(12,centralSize,true);
+  endView.setUint32(16,offset,true);
+
+  return new Blob([...parts,...central,end],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+
+function xmlEscape(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&apos;"
+  }[char]));
+}
+
+function run(text,options){
+  const settings = options || {};
+  const size = (settings.size || 16) * 2;
+  const properties = "<w:rPr>" +
+    (settings.bold ? "<w:b/><w:bCs/>" : "") +
+    (settings.italic ? "<w:i/><w:iCs/>" : "") +
+    (settings.color ? `<w:color w:val="${settings.color}"/>` : "") +
+    `<w:sz w:val="${size}"/><w:szCs w:val="${size}"/>` +
+    "</w:rPr>";
+
+  return `<w:r>${properties}<w:t xml:space="preserve">${xmlEscape(text)}</w:t></w:r>`;
+}
+
+function paragraph(content,options){
+  const settings = options || {};
+  const spacing = `<w:spacing w:before="${settings.before || 0}" w:after="${settings.after === undefined ? 120 : settings.after}" w:line="276" w:lineRule="auto"/>`;
+  const alignment = settings.align ? `<w:jc w:val="${settings.align}"/>` : "";
+  const indent = settings.indent ? `<w:ind w:firstLine="${settings.indent}"/>` : "";
+  const border = settings.rule ? '<w:pBdr><w:bottom w:val="single" w:sz="8" w:space="2" w:color="16A34A"/></w:pBdr>' : "";
+  const numbering = settings.bullet ? '<w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>' : "";
+
+  return `<w:p><w:pPr>${numbering}${spacing}${alignment}${indent}${border}</w:pPr>${content}</w:p>`;
+}
+
+function heading(text,level){
+  const size = level === 1 ? 20 : 17;
+  return paragraph(run(text,{bold:true,size:size,color:level === 1 ? "0F5132" : "15803D"}),{
+    before:level === 1 ? 320 : 240,
+    after:120,
+    rule:level === 1
+  });
+}
+
+function bodyText(text,options){
+  const settings = options || {};
+  return paragraph(run(text,{size:15}),{
+    align:settings.align || "both",
+    indent:settings.indent === undefined ? 720 : settings.indent,
+    after:120
+  });
+}
+
+function bulletText(index,text){
+  return paragraph(run(`${index}. ${text}`,{size:15}),{after:80,indent:360});
+}
+
+function cell(text,options){
+  const settings = options || {};
+  const width = settings.width ? `<w:tcW w:w="${settings.width}" w:type="dxa"/>` : "";
+  const shade = settings.head ? '<w:shd w:val="clear" w:color="auto" w:fill="E8F5EC"/>' : "";
+  const align = settings.align || (settings.head ? "center" : "left");
+  const content = paragraph(run(text,{size:14,bold:Boolean(settings.head)}),{after:0,align:align,indent:0});
+
+  return `<w:tc><w:tcPr>${width}${shade}<w:vAlign w:val="center"/></w:tcPr>${content}</w:tc>`;
+}
+
+function table(headers,rows,widths){
+  const columns = widths || headers.map(() => Math.floor(9350 / headers.length));
+  const grid = columns.map(width => `<w:gridCol w:w="${width}"/>`).join("");
+  const borders = '<w:tblBorders>' +
+    ['top','left','bottom','right','insideH','insideV']
+      .map(side => `<w:${side} w:val="single" w:sz="6" w:space="0" w:color="BBD9C6"/>`).join("") +
+    '</w:tblBorders>';
+
+  const headRow = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${headers.map((text,index) => cell(text,{head:true,width:columns[index]})).join("")}</w:tr>`;
+  const bodyRows = rows.map(row => `<w:tr>${row.map((value,index) => cell(value,{
+    width:columns[index],
+    align:index === 0 ? "left" : (typeof value === "string" && /^[\d.,%\s-]+$/.test(value) ? "center" : "left")
+  })).join("")}</w:tr>`).join("");
+
+  return `<w:tbl><w:tblPr><w:tblW w:w="9350" w:type="dxa"/>${borders}<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>${grid}</w:tblGrid>${headRow}${bodyRows}</w:tbl>` +
+    paragraph("",{after:80});
+}
+
+function demographicRows(data){
+  const blocks = [
+    {title:"เพศ",data:data.gender || {}},
+    {title:"ช่วงอายุ",data:data.age || {}},
+    {title:"หน่วยงาน",data:data.unit || {}},
+    {title:"ระดับการศึกษา",data:data.education || {}}
+  ];
+  const rows = [];
+
+  blocks.forEach(block => {
+    const entries = countRows(block.data);
+    const total = entries.reduce((sum,entry) => sum + entry.count,0);
+
+    entries.forEach((entry,index) => {
+      rows.push([
+        index === 0 ? block.title : "",
+        entry.label,
+        numberText(entry.count),
+        `${fixed(total ? entry.count * 100 / total : 0)}%`
+      ]);
+    });
+  });
+
+  return rows.length ? rows : [["-","ยังไม่มีข้อมูล","0","0.00%"]];
+}
+
+function buildDocumentXml(dashboard){
+  const summary = dashboard.executiveSummary || {};
+  const chapter = dashboard.chapter4 || {};
+  const groups = dashboard.groupAverages || [];
+  const items = dashboard.itemAverages || [];
+  const distribution = dashboard.scoreDistribution || {};
+  const comments = dashboard.comments || {};
+  const counts = dashboard.commentCounts || {};
+  const bestGroup = dashboard.bestGroup || {};
+  const lowestGroup = dashboard.lowestGroup || {};
+  const body = [];
+
+  // ---- title block ----
+  body.push(paragraph(run("บทสรุปสำหรับผู้บริหาร",{bold:true,size:24,color:"0F5132"}),{align:"center",after:60,indent:0}));
+  body.push(paragraph(run("ผลการประเมินความพึงพอใจ โครงการพัฒนานักวิจัยด้านภูมิปัญญาการแพทย์แผนไทยและการแพทย์ทางเลือก จังหวัดชัยนาท",{size:16}),{align:"center",after:60,indent:0}));
+  body.push(paragraph(run(`ข้อมูล ณ วันที่ ${dashboard.updatedAt || "-"}  |  ผู้ตอบแบบประเมิน ${numberText(dashboard.totalResponses)} ราย`,{size:13,color:"5A7A68"}),{align:"center",after:240,indent:0,rule:true}));
+
+  // ---- 1. key findings ----
+  body.push(heading("1. ข้อค้นพบสำคัญ",1));
+  body.push(bodyText(summary.headline || "ยังไม่มีข้อมูล"));
+  (summary.points || []).forEach((point,index) => body.push(bulletText(index + 1,point)));
+
+  body.push(table(
+    ["ตัวชี้วัด","ผลการประเมิน"],
+    [
+      ["จำนวนผู้ตอบแบบประเมิน",`${numberText(dashboard.totalResponses)} ราย`],
+      ["คะแนนเฉลี่ยรวม (เต็ม 5.00)",fixed(dashboard.overallAverage)],
+      ["ระดับความพึงพอใจ",dashboard.overallLevel || "-"],
+      ["ส่วนเบี่ยงเบนมาตรฐาน (S.D.)",fixed(dashboard.overallSd)],
+      ["สัดส่วนคะแนนเชิงบวก (ระดับมาก–มากที่สุด)",`${fixed(dashboard.positivePercent)}%`],
+      ["สัดส่วนคะแนนระดับน้อย–น้อยที่สุด",`${fixed(dashboard.lowPercent)}%`],
+      ["จำนวนการให้คะแนนทั้งหมด",`${numberText(dashboard.totalRatings)} ครั้ง`],
+      ["หมวดที่ได้คะแนนสูงสุด",`${bestGroup.title || "-"} (${fixed(bestGroup.average)})`],
+      ["หมวดที่ได้คะแนนต่ำสุด",`${lowestGroup.title || "-"} (${fixed(lowestGroup.average)})`]
+    ],
+    [5300,4050]
+  ));
+
+  // ---- 2. respondent profile ----
+  body.push(heading("2. ข้อมูลทั่วไปของผู้ตอบแบบประเมิน",1));
+  body.push(table(["ลักษณะ","รายการ","จำนวน (ราย)","ร้อยละ"],demographicRows(dashboard.demographics || {}),[2400,3750,1600,1600]));
+
+  // ---- 3. results by category ----
+  body.push(heading("3. ผลการประเมินรายหมวด",1));
+  body.push(table(
+    ["หมวดการประเมิน","ช่วงข้อ","ค่าเฉลี่ย","ระดับ","เชิงบวก"],
+    groups.length
+      ? groups.map(group => [group.title,group.range,fixed(group.average),group.level,`${fixed(group.positivePercent)}%`])
+      : [["ยังไม่มีข้อมูล","-","-","-","-"]],
+    [3550,1300,1300,1600,1600]
+  ));
+
+  // ---- 4. results by item ----
+  body.push(heading("4. ผลการประเมินรายข้อ",1));
+  body.push(table(
+    ["ข้อ","รายการประเมิน","ค่าเฉลี่ย","ระดับ","n","เชิงบวก"],
+    items.length
+      ? items.map(item => [item.question,item.title,fixed(item.average),item.level,numberText(item.responses),`${fixed(item.positivePercent)}%`])
+      : [["-","ยังไม่มีข้อมูล","-","-","-","-"]],
+    [750,3600,1250,1450,700,1600]
+  ));
+
+  // ---- 5. distribution ----
+  body.push(heading("5. การกระจายของคะแนน",1));
+  body.push(table(
+    ["ระดับคะแนน","ความหมาย","จำนวน (ครั้ง)","ร้อยละ"],
+    [5,4,3,2,1].map(score => {
+      const raw = distribution[String(score)] || {count:0,percent:0};
+      return [String(score),ratingLabels[score],numberText(raw.count),`${fixed(raw.percent)}%`];
+    }),
+    [1800,3350,2100,2100]
+  ));
+
+  // ---- 6. strengths and gaps ----
+  body.push(heading("6. ประเด็นเด่นและประเด็นที่ควรพัฒนา",1));
+  body.push(heading("6.1 ข้อที่ได้คะแนนสูงสุด",2));
+  (dashboard.topItems || []).forEach((item,index) => {
+    body.push(bulletText(index + 1,`${item.question} ${item.title} — ค่าเฉลี่ย ${fixed(item.average)} ระดับ${item.level}`));
+  });
+  if(!(dashboard.topItems || []).length){
+    body.push(bodyText("ยังไม่มีข้อมูล"));
+  }
+
+  body.push(heading("6.2 ข้อที่ควรพัฒนาต่อ",2));
+  (dashboard.improvementItems || []).forEach((item,index) => {
+    body.push(bulletText(index + 1,`${item.question} ${item.title} — ค่าเฉลี่ย ${fixed(item.average)} ระดับ${item.level}`));
+  });
+  if(!(dashboard.improvementItems || []).length){
+    body.push(bodyText("ยังไม่มีข้อมูล"));
+  }
+
+  // ---- 7. analysis ----
+  body.push(heading("7. บทวิเคราะห์ผลการประเมิน",1));
+  if(chapter.methodNote){
+    body.push(paragraph(run(chapter.methodNote,{size:14,italic:true,color:"5A7A68"}),{after:140,indent:0}));
+  }
+  (chapter.paragraphs || ["ยังไม่มีข้อมูลสำหรับจัดทำบทวิเคราะห์"]).forEach(text => body.push(bodyText(text)));
+
+  // ---- 8. open-ended feedback ----
+  body.push(heading("8. ความคิดเห็นปลายเปิด",1));
+  if(dashboard.restricted){
+    body.push(bodyText(`รายงานฉบับนี้จัดทำในโหมดไม่ระบุตัวตน จึงไม่แสดงชื่อผู้ตอบและเนื้อหาความคิดเห็น (จุดเด่น ${numberText(counts.strengths)} รายการ ปัญหาและอุปสรรค ${numberText(counts.problems)} รายการ ข้อเสนอแนะ ${numberText(counts.suggestions)} รายการ) กรุณาเข้าสู่ระบบก่อนดาวน์โหลดหากต้องการรายงานฉบับสมบูรณ์`));
+  }else{
+    [
+      {title:"8.1 จุดเด่นของโครงการ",list:comments.strengths || []},
+      {title:"8.2 ปัญหาและอุปสรรค",list:comments.problems || []},
+      {title:"8.3 ข้อเสนอแนะเพิ่มเติม",list:comments.suggestions || []}
+    ].forEach(block => {
+      body.push(heading(block.title,2));
+      if(block.list.length){
+        block.list.forEach((item,index) => body.push(bulletText(index + 1,`${item.text} (${item.name})`)));
+      }else{
+        body.push(bodyText("ไม่มีผู้แสดงความคิดเห็นในหัวข้อนี้"));
+      }
+    });
+  }
+
+  // ---- 9. recommendation ----
+  body.push(heading("9. ข้อเสนอแนะเชิงพัฒนา",1));
+  body.push(bodyText(chapter.recommendation || "ควรเก็บข้อมูลให้ครบถ้วนก่อนนำผลไปสรุปในรายงาน"));
+
+  // ---- appendix ----
+  body.push(heading("ภาคผนวก: เกณฑ์การแปลผลค่าเฉลี่ย",1));
+  body.push(table(
+    ["ช่วงค่าเฉลี่ย","ระดับความพึงพอใจ"],
+    (dashboard.scale || []).length
+      ? dashboard.scale.map(item => [item.range,item.level])
+      : [["4.51-5.00","มากที่สุด"],["3.51-4.50","มาก"],["2.51-3.50","ปานกลาง"],["1.51-2.50","น้อย"],["1.00-1.50","น้อยที่สุด"]],
+    [4675,4675]
+  ));
+
+  body.push(paragraph(run("จัดทำโดยระบบประมวลผลแบบประเมินความพึงพอใจอัตโนมัติ",{size:12,color:"7A9186"}),{align:"center",before:240,indent:0}));
+
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body.join("")}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1418" w:right="1134" w:bottom="1418" w:left="1701" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+}
+
+function buildStylesXml(){
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="TH Sarabun New" w:hAnsi="TH Sarabun New" w:cs="TH Sarabun New" w:eastAsia="TH Sarabun New"/><w:sz w:val="32"/><w:szCs w:val="32"/><w:lang w:val="th-TH" w:bidi="th-TH"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`;
+}
+
+function exportDocx(){
+  const dashboard = state.dashboard;
+
+  if(!dashboard || !dashboard.totalResponses){
+    showToast("ยังไม่มีข้อมูลให้จัดทำรายงาน",true);
     return;
   }
 
-  refs.gateUser.focus();
+  try{
+    const blob = zipStore([
+      {
+        name:"[Content_Types].xml",
+        content:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`
+      },
+      {
+        name:"_rels/.rels",
+        content:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`
+      },
+      {
+        name:"word/_rels/document.xml.rels",
+        content:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`
+      },
+      {name:"word/styles.xml",content:buildStylesXml()},
+      {name:"word/document.xml",content:buildDocumentXml(dashboard)}
+    ]);
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "บทสรุปสำหรับผู้บริหาร-ผลการประเมินความพึงพอใจ.docx";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+
+    showToast(dashboard.restricted
+      ? "ดาวน์โหลดรายงานแล้ว (ไม่รวมชื่อและความคิดเห็น)"
+      : "ดาวน์โหลดรายงานฉบับสมบูรณ์แล้ว");
+  }catch(error){
+    showToast("จัดทำรายงานไม่สำเร็จ",true);
+  }
 }
+
 
 /* ============================================================
    INIT
@@ -3189,12 +3701,14 @@ refs.refreshButton.addEventListener("click",loadDashboard);
 refs.themeToggle.addEventListener("click",toggleTheme);
 refs.printButton.addEventListener("click",() => window.print());
 refs.exportCsvButton.addEventListener("click",exportCsv);
+refs.exportDocxButton.addEventListener("click",exportDocx);
 refs.toTop.addEventListener("click",() => window.scrollTo({top:0,behavior:"smooth"}));
 refs.copyExecutiveButton.addEventListener("click",() => copyText(executiveText(),refs.copyExecutiveStatus));
 refs.copyChapterButton.addEventListener("click",() => copyText(chapterText(),refs.copyChapterStatus));
 
 renderDashboard(createEmptyDashboard());
 setupGate();
+loadDashboard();
 </script>
 </body>
 </html>
