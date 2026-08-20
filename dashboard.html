@@ -1749,7 +1749,7 @@ body.locked .progress-rail{display:none}
       <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
     </div>
     <h1>เข้าสู่ระบบ</h1>
-    <p class="sub">Dashboard นี้แสดงข้อมูลผู้ตอบ ความคิดเห็น และชื่อผู้แสดงความคิดเห็น<br>กรุณายืนยันตัวตนก่อนเข้าดู</p>
+    <p class="sub">Dashboard นี้แสดงข้อมูลผู้ตอบ ความคิดเห็น และชื่อผู้แสดงความคิดเห็น<br>ระบบตรวจสอบสิทธิ์ที่เซิร์ฟเวอร์ก่อนส่งข้อมูล</p>
 
     <div class="gate-field">
       <label for="gateUser">
@@ -1774,9 +1774,9 @@ body.locked .progress-rail{display:none}
 
     <p id="gateError" class="gate-error" role="alert"></p>
 
-    <button class="button primary" type="submit">
+    <button id="gateSubmit" class="button primary" type="submit">
       <svg class="ico" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg>
-      <span>เข้าสู่ระบบ</span>
+      <span id="gateSubmitText">เข้าสู่ระบบ</span>
     </button>
 
     <p class="gate-note">ผู้ตอบแบบประเมินไม่ต้องเข้าสู่ระบบ · <a id="gateFormLink" href="index.html">ไปที่แบบประเมิน</a></p>
@@ -2125,6 +2125,8 @@ const refs = {
   gatePass:document.getElementById("gatePass"),
   gateToggle:document.getElementById("gateToggle"),
   gateError:document.getElementById("gateError"),
+  gateSubmit:document.getElementById("gateSubmit"),
+  gateSubmitText:document.getElementById("gateSubmitText"),
   gateFormLink:document.getElementById("gateFormLink"),
   logoutButton:document.getElementById("logoutButton"),
   formLink:document.getElementById("formLink"),
@@ -2244,20 +2246,27 @@ function resolveGasUrl(){
   return "";
 }
 
-function getDashboardWithGoogleScript(){
+function getDashboardWithGoogleScript(credentials){
   return new Promise((resolve,reject) => {
     google.script.run
       .withSuccessHandler(resolve)
       .withFailureHandler(reject)
-      .getDashboardData();
+      .getDashboardData(credentials);
   });
 }
 
-async function loadDashboardFetch(url){
-  const endpoint = new URL(url,location.href);
-  endpoint.searchParams.set("action","dashboard");
-
-  const response = await fetch(endpoint.toString(),{method:"GET",redirect:"follow"});
+// POST keeps the password out of the URL, out of browser history and
+// out of any server-side request log that records query strings.
+async function loadDashboardPost(url,credentials){
+  const response = await fetch(url,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({
+      action:"dashboard",
+      user:credentials.user,
+      token:credentials.token
+    })
+  });
 
   if(!response.ok){
     throw new Error(`HTTP ${response.status}`);
@@ -2266,7 +2275,7 @@ async function loadDashboardFetch(url){
   return await response.json();
 }
 
-function loadDashboardJsonp(url){
+function loadDashboardJsonp(url,credentials){
   return new Promise((resolve,reject) => {
     const callbackName = `dashboardCallback_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     const script = document.createElement("script");
@@ -2289,6 +2298,8 @@ function loadDashboardJsonp(url){
     const endpoint = new URL(url,location.href);
     endpoint.searchParams.set("action","dashboard");
     endpoint.searchParams.set("callback",callbackName);
+    endpoint.searchParams.set("user",credentials.user);
+    endpoint.searchParams.set("token",credentials.token);
     script.src = endpoint.toString();
     script.onerror = () => {
       cleanup();
@@ -2300,28 +2311,51 @@ function loadDashboardJsonp(url){
 
 // Apps Script answers with Access-Control-Allow-Origin:* so a plain fetch
 // works cross-origin; JSONP stays as a fallback for stricter environments.
-async function loadDashboardRemote(url){
+async function requestDashboard(credentials){
+  if(canUseGoogleScript()){
+    return await getDashboardWithGoogleScript(credentials);
+  }
+
+  const url = resolveGasUrl();
+
   if(!url){
     throw new Error("Missing Web App URL");
   }
 
   try{
-    return await loadDashboardFetch(url);
+    return await loadDashboardPost(url,credentials);
   }catch(error){
-    return await loadDashboardJsonp(url);
+    return await loadDashboardJsonp(url,credentials);
   }
 }
 
+function isUnauthorized(payload){
+  return !payload || payload.status === "unauthorized";
+}
+
 async function loadDashboard(){
+  const credentials = getCredentials();
+
+  if(!credentials){
+    lockDashboard();
+    return;
+  }
+
   refs.refreshButton.disabled = true;
   refs.refreshButton.classList.add("loading");
   document.body.classList.add("is-loading");
   setStatus("กำลังโหลดข้อมูลจากชีต Responses...");
 
   try{
-    const data = canUseGoogleScript()
-      ? await getDashboardWithGoogleScript()
-      : await loadDashboardRemote(resolveGasUrl());
+    const data = await requestDashboard(credentials);
+
+    if(isUnauthorized(data)){
+      storeCredentials(null);
+      document.body.classList.remove("is-loading");
+      renderDashboard(createEmptyDashboard());
+      lockDashboard("เซสชันหมดอายุหรือรหัสผ่านถูกเปลี่ยน กรุณาเข้าสู่ระบบอีกครั้ง");
+      return;
+    }
 
     state.dashboard = data;
     document.body.classList.remove("is-loading");
@@ -3009,26 +3043,27 @@ function setupSpotlight(){
 /* ============================================================
    LOGIN GATE
    ============================================================
-   Note: this only hides the dashboard in the browser. The file is
-   public, so the credentials below are readable by anyone who views
-   the source. Move the check into the Apps Script Web App if the data
-   genuinely needs protecting.
+   No credentials live in this file. The username and password are
+   sent to the Apps Script Web App, which compares them against values
+   held in Script Properties and refuses to return any data without a
+   match — so viewing this page's source reveals nothing.
    ============================================================ */
-const CREDENTIALS = {username:"admin",password:"1234"};
 const AUTH_KEY = "dashboardAuth";
 
-function isAuthenticated(){
+function getCredentials(){
   try{
-    return window.sessionStorage.getItem(AUTH_KEY) === "1";
+    const raw = window.sessionStorage.getItem(AUTH_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && parsed.user && parsed.token ? parsed : null;
   }catch(error){
-    return false;
+    return null;
   }
 }
 
-function rememberAuth(value){
+function storeCredentials(credentials){
   try{
-    if(value){
-      window.sessionStorage.setItem(AUTH_KEY,"1");
+    if(credentials){
+      window.sessionStorage.setItem(AUTH_KEY,JSON.stringify(credentials));
     }else{
       window.sessionStorage.removeItem(AUTH_KEY);
     }
@@ -3042,30 +3077,32 @@ function unlockDashboard(instant){
 
   if(instant){
     refs.gate.style.display = "none";
-  }else{
     refs.gate.classList.add("hidden");
-    window.setTimeout(() => {
-      refs.gate.style.display = "none";
-    },500);
-  }
-
-  loadDashboard();
-}
-
-function handleGateSubmit(event){
-  event.preventDefault();
-
-  const username = refs.gateUser.value.trim();
-  const password = refs.gatePass.value;
-
-  if(username === CREDENTIALS.username && password === CREDENTIALS.password){
-    rememberAuth(true);
-    refs.gateError.textContent = "";
-    unlockDashboard();
     return;
   }
 
-  refs.gateError.textContent = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+  refs.gate.classList.add("hidden");
+  window.setTimeout(() => {
+    refs.gate.style.display = "none";
+  },500);
+}
+
+function lockDashboard(message){
+  document.body.classList.add("locked");
+  refs.gate.style.display = "";
+  refs.gate.classList.remove("hidden");
+  refs.gateError.textContent = message || "";
+  refs.gatePass.value = "";
+  refs.gateUser.focus();
+}
+
+function setGateBusy(busy){
+  refs.gateSubmit.disabled = busy;
+  refs.gateSubmitText.textContent = busy ? "กำลังตรวจสอบ..." : "เข้าสู่ระบบ";
+}
+
+function rejectLogin(message){
+  refs.gateError.textContent = message;
   refs.gatePass.value = "";
   refs.gatePass.focus();
   refs.gateForm.classList.remove("shake");
@@ -3073,9 +3110,50 @@ function handleGateSubmit(event){
   refs.gateForm.classList.add("shake");
 }
 
+async function handleGateSubmit(event){
+  event.preventDefault();
+
+  const credentials = {
+    user:refs.gateUser.value.trim(),
+    token:refs.gatePass.value
+  };
+
+  if(!credentials.user || !credentials.token){
+    rejectLogin("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน");
+    return;
+  }
+
+  setGateBusy(true);
+  refs.gateError.textContent = "";
+
+  try{
+    const data = await requestDashboard(credentials);
+
+    if(isUnauthorized(data)){
+      rejectLogin("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      return;
+    }
+
+    storeCredentials(credentials);
+    state.dashboard = data;
+    document.body.classList.remove("is-loading");
+    renderDashboard(data);
+    setStatus(`Dashboard อัปเดตแล้ว ${data.updatedAt || ""}`,"success");
+    unlockDashboard();
+    showToast("เข้าสู่ระบบสำเร็จ");
+  }catch(error){
+    rejectLogin("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+  }finally{
+    setGateBusy(false);
+  }
+}
+
 function logout(){
-  rememberAuth(false);
-  location.reload();
+  storeCredentials(null);
+  state.dashboard = null;
+  renderDashboard(createEmptyDashboard());
+  setStatus("");
+  lockDashboard("ออกจากระบบเรียบร้อยแล้ว");
 }
 
 function setupGate(){
@@ -3089,8 +3167,9 @@ function setupGate(){
     refs.gatePass.focus();
   });
 
-  if(isAuthenticated()){
+  if(getCredentials()){
     unlockDashboard(true);
+    loadDashboard();
     return;
   }
 
