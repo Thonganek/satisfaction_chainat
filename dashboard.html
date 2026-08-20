@@ -181,7 +181,7 @@ h1,h2,h3,h4,p{margin-top:0}
   display:block;
   height:100%;
   width:0;
-  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));
+  background:linear-gradient(90deg,var(--a1),var(--a6),var(--a2),var(--a3),var(--a5));
   box-shadow:0 0 14px var(--glow);
   transition:width .12s linear;
 }
@@ -231,7 +231,7 @@ h1,h2,h3,h4,p{margin-top:0}
   flex:0 0 auto;
   border-radius:13px;
   color:var(--on-accent);
-  background:linear-gradient(140deg,var(--c1),var(--c2));
+  background:var(--c1);
   font-family:var(--font-num);
   font-weight:700;
   font-size:1.05rem;
@@ -288,7 +288,7 @@ h1,h2,h3,h4,p{margin-top:0}
 
 .nav-links a.active{
   color:var(--on-accent);
-  background:linear-gradient(135deg,var(--c1),var(--c2));
+  background:var(--c1);
   box-shadow:0 8px 20px -8px var(--glow);
 }
 
@@ -337,7 +337,7 @@ h1,h2,h3,h4,p{margin-top:0}
 .button.primary{
   border-color:transparent;
   color:var(--on-accent);
-  background:linear-gradient(135deg,var(--c1),var(--c2));
+  background:var(--c1);
   box-shadow:0 14px 32px -14px var(--glow);
 }
 
@@ -463,10 +463,7 @@ h1,h2,h3,h4,p{margin-top:0}
 }
 
 .hero h1 .grad{
-  background:linear-gradient(110deg,var(--c1),var(--c2) 45%,var(--c3));
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
+  color:var(--c1);
 }
 
 .hero p.lead{
@@ -602,11 +599,7 @@ h1,h2,h3,h4,p{margin-top:0}
   font-weight:700;
   line-height:1.1;
   letter-spacing:-.5px;
-  background:linear-gradient(140deg,var(--ink),var(--accent));
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  -webkit-text-fill-color:transparent;
+  color:var(--tint,var(--c1));
   overflow-wrap:anywhere;
 }
 
@@ -641,7 +634,7 @@ h1,h2,h3,h4,p{margin-top:0}
   fill:none;
   stroke-width:9;
   stroke-linecap:round;
-  stroke:url(#gaugeGrad);
+  stroke:var(--c1);
   stroke-dasharray:314;
   stroke-dashoffset:314;
   transition:stroke-dashoffset 1.4s var(--ease);
@@ -672,7 +665,7 @@ h1,h2,h3,h4,p{margin-top:0}
 .spark i{
   flex:1;
   border-radius:3px 3px 0 0;
-  background:linear-gradient(180deg,var(--c1),transparent);
+  background:var(--c1);
   opacity:.55;
   height:0;
   transition:height .9s var(--ease),opacity .3s ease;
@@ -733,7 +726,7 @@ h1,h2,h3,h4,p{margin-top:0}
   left:8px;right:8px;bottom:-1px;
   height:2px;
   border-radius:2px;
-  background:linear-gradient(90deg,var(--c1),var(--c2));
+  background:var(--c1);
 }
 
 .section h2{
@@ -771,7 +764,7 @@ h1,h2,h3,h4,p{margin-top:0}
   position:absolute;
   left:0;top:0;bottom:0;
   width:3px;
-  background:linear-gradient(180deg,var(--c1),var(--c2),var(--c3));
+  background:linear-gradient(180deg,var(--a1),var(--a2),var(--a3),var(--a5));
 }
 
 .headline{
@@ -856,7 +849,7 @@ h1,h2,h3,h4,p{margin-top:0}
   content:"";
   width:4px;height:16px;
   border-radius:3px;
-  background:linear-gradient(180deg,var(--c1),var(--c2));
+  background:var(--c1);
   flex:0 0 auto;
 }
 
@@ -882,7 +875,7 @@ h1,h2,h3,h4,p{margin-top:0}
 
 .radar-grid{fill:none;stroke:var(--line-strong);stroke-width:1}
 .radar-axis{stroke:var(--line-strong);stroke-width:1;opacity:.7}
-.radar-area{fill:url(#radarFill);stroke:var(--c1);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 10px var(--glow))}
+.radar-area{fill:var(--c1);fill-opacity:.2;stroke:var(--c1);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 10px var(--glow))}
 .radar-point{fill:var(--c2);stroke:var(--bg);stroke-width:2}
 .radar-label{fill:var(--muted);font-size:10.5px;font-weight:600;font-family:var(--font-sans)}
 .radar-ring-label{fill:var(--muted);font-size:9px;opacity:.65;font-family:var(--font-num)}
@@ -1017,7 +1010,7 @@ h1,h2,h3,h4,p{margin-top:0}
   height:100%;
   width:0;
   border-radius:999px;
-  background:linear-gradient(90deg,var(--c1),var(--c2));
+  background:var(--c1);
   transition:width 1.1s var(--ease);
   box-shadow:0 0 12px -2px var(--glow);
 }
@@ -1036,11 +1029,11 @@ h1,h2,h3,h4,p{margin-top:0}
   60%,100%{transform:translateX(220%)}
 }
 
-.bar-fill.lv5{background:linear-gradient(90deg,var(--c1),var(--c3))}
-.bar-fill.lv4{background:linear-gradient(90deg,var(--c2),var(--c1))}
-.bar-fill.lv3{background:linear-gradient(90deg,var(--c4),var(--c3))}
-.bar-fill.lv2{background:linear-gradient(90deg,var(--c-orange),var(--c4))}
-.bar-fill.lv1{background:linear-gradient(90deg,var(--c5),var(--c-orange))}
+.bar-fill.lv5{background:#15803d}
+.bar-fill.lv4{background:#22c55e}
+.bar-fill.lv3{background:#f59e0b}
+.bar-fill.lv2{background:#f97316}
+.bar-fill.lv1{background:#ef4444}
 
 .demo-block{
   display:grid;
@@ -1094,7 +1087,7 @@ h1,h2,h3,h4,p{margin-top:0}
   left:0;top:16px;bottom:16px;
   width:2px;
   border-radius:2px;
-  background:linear-gradient(180deg,var(--c1),transparent);
+  background:var(--c1);
 }
 
 .recommendation-box{
@@ -1208,7 +1201,7 @@ html[data-theme="light"] .badge.lv1{color:#b91c1c}
   height:100%;
   width:0;
   border-radius:999px;
-  background:linear-gradient(90deg,var(--c1),var(--c2));
+  background:var(--c1);
   transition:width 1s var(--ease);
 }
 
@@ -1414,6 +1407,80 @@ html[data-theme="light"] .badge.lv1{color:#b91c1c}
   .comment-list{max-height:none;overflow:visible}
   .section{break-inside:avoid}
 }
+
+/* ============================================================
+   VIVID ACCENTS
+   ============================================================ */
+:root{
+  --a1:#22c55e;
+  --a2:#3b82f6;
+  --a3:#a855f7;
+  --a4:#f59e0b;
+  --a5:#ec4899;
+  --a6:#06b6d4;
+  --a7:#f97316;
+  --a8:#ef4444;
+}
+
+html[data-theme="light"]{
+  --a1:#16a34a;
+  --a2:#2563eb;
+  --a3:#9333ea;
+  --a4:#d97706;
+  --a5:#db2777;
+  --a6:#0891b2;
+  --a7:#ea580c;
+  --a8:#dc2626;
+}
+
+.section-number::after{background:rgba(255,255,255,.5)}
+
+.page > section:nth-of-type(3) .section-number{background:var(--a1);color:#fff;border-color:transparent}
+.page > section:nth-of-type(4) .section-number{background:var(--a2);color:#fff;border-color:transparent}
+.page > section:nth-of-type(5) .section-number{background:var(--a3);color:#fff;border-color:transparent}
+.page > section:nth-of-type(6) .section-number{background:var(--a7);color:#fff;border-color:transparent}
+.page > section:nth-of-type(7) .section-number{background:var(--a5);color:#fff;border-color:transparent}
+
+.metric-grid > .metric:nth-child(1){--tint:var(--a1)}
+.metric-grid > .metric:nth-child(2){--tint:var(--a2)}
+.metric-grid > .metric:nth-child(3){--tint:var(--a3)}
+.metric-grid > .metric:nth-child(4){--tint:var(--a7)}
+.metric-grid > .metric:nth-child(5){--tint:var(--a5)}
+.metric .metric-label .ico{stroke:var(--tint,var(--c1))}
+.metric .spark i{background:var(--tint,var(--c1))}
+
+.grid-2 > .panel:nth-child(1) h3::before{background:var(--a1)}
+.grid-2 > .panel:nth-child(2) h3::before{background:var(--a2)}
+.grid-3 > .panel:nth-child(1) h3::before{background:var(--a1)}
+.grid-3 > .panel:nth-child(2) h3::before{background:var(--a7)}
+.grid-3 > .panel:nth-child(3) h3::before{background:var(--a3)}
+.panel.mt-16 h3::before{background:var(--a6)}
+
+.point-list li:nth-child(5n+1)::before{color:var(--a1)}
+.point-list li:nth-child(5n+2)::before{color:var(--a2)}
+.point-list li:nth-child(5n+3)::before{color:var(--a3)}
+.point-list li:nth-child(5n+4)::before{color:var(--a7)}
+.point-list li:nth-child(5n+5)::before{color:var(--a5)}
+
+.narrative p:nth-child(5n+1)::before{background:var(--a1)}
+.narrative p:nth-child(5n+2)::before{background:var(--a2)}
+.narrative p:nth-child(5n+3)::before{background:var(--a3)}
+.narrative p:nth-child(5n+4)::before{background:var(--a7)}
+.narrative p:nth-child(5n+5)::before{background:var(--a5)}
+
+#groupBars .bar-row:nth-of-type(1) .bar-fill{background:var(--a1)}
+#groupBars .bar-row:nth-of-type(2) .bar-fill{background:var(--a2)}
+#groupBars .bar-row:nth-of-type(3) .bar-fill{background:var(--a3)}
+#groupBars .bar-row:nth-of-type(4) .bar-fill{background:var(--a5)}
+
+.demo-block:nth-child(1) h4::before,.demo-block:nth-child(1) .bar-fill{background:var(--a1)}
+.demo-block:nth-child(2) h4::before,.demo-block:nth-child(2) .bar-fill{background:var(--a2)}
+.demo-block:nth-child(3) h4::before,.demo-block:nth-child(3) .bar-fill{background:var(--a3)}
+.demo-block:nth-child(4) h4::before,.demo-block:nth-child(4) .bar-fill{background:var(--a5)}
+
+.grid-3 > .panel:nth-child(1) .comment-list li{border-left:3px solid var(--a1)}
+.grid-3 > .panel:nth-child(2) .comment-list li{border-left:3px solid var(--a7)}
+.grid-3 > .panel:nth-child(3) .comment-list li{border-left:3px solid var(--a3)}
 </style>
 </head>
 <body class="is-loading">
