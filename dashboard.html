@@ -31,31 +31,38 @@
 
 /* ---------- LIGHT ---------- */
 html[data-theme="light"]{
-  --bg:#f4faf7;
-  --bg-deep:#e8f4ed;
-  --ink:#062b1e;
-  --ink-2:#1f4a37;
-  --muted:#5d7d6d;
-  --line:rgba(6,70,45,.11);
-  --line-strong:rgba(6,70,45,.2);
-  --glass:rgba(255,255,255,.74);
-  --glass-2:rgba(255,255,255,.88);
-  --glass-hi:rgba(255,255,255,.96);
-  --track:rgba(6,70,45,.08);
-  --accent:#0f9d63;
-  --accent-ink:#04724a;
-  --glow:rgba(16,185,129,.26);
-  --shadow:0 22px 48px -24px rgba(6,70,45,.3);
-  --shadow-lg:0 42px 86px -42px rgba(6,70,45,.38);
-  --orb-1:rgba(16,185,129,.34);
-  --orb-2:rgba(34,211,238,.26);
-  --orb-3:rgba(163,230,53,.3);
-  --grid-line:rgba(6,70,45,.05);
+  --c1:#059669;
+  --c2:#0e8ea8;
+  --c3:#65a30d;
+  --c4:#d97706;
+  --c5:#e11d48;
+  --c-orange:#ea580c;
+  --bg:#e4f0e9;
+  --bg-deep:#d2e6da;
+  --ink:#052419;
+  --ink-2:#173c2c;
+  --muted:#4d6b5c;
+  --line:rgba(5,55,36,.16);
+  --line-strong:rgba(5,55,36,.28);
+  --glass:rgba(255,255,255,.7);
+  --glass-2:rgba(255,255,255,.84);
+  --glass-hi:rgba(255,255,255,.93);
+  --track:rgba(5,55,36,.13);
+  --accent:#0b8654;
+  --accent-ink:#045c3b;
+  --glow:rgba(5,150,105,.3);
+  --shadow:0 22px 48px -22px rgba(4,50,32,.42);
+  --shadow-lg:0 42px 86px -38px rgba(4,50,32,.5);
+  --orb-1:rgba(5,150,105,.4);
+  --orb-2:rgba(14,142,168,.3);
+  --orb-3:rgba(101,163,13,.32);
+  --grid-line:rgba(5,55,36,.075);
   --on-accent:#ffffff;
 }
 
 /* ---------- DARK ---------- */
 html[data-theme="dark"]{
+  --c-orange:#fb923c;
   --bg:#04100c;
   --bg-deep:#020806;
   --ink:#eafff5;
@@ -78,6 +85,15 @@ html[data-theme="dark"]{
   --grid-line:rgba(140,255,210,.045);
   --on-accent:#03150e;
 }
+
+/* GRADIENT STOPS (light mode runs deeper) */
+html[data-theme="light"] #gaugeGrad stop:nth-child(1),
+html[data-theme="light"] #ringGrad stop:nth-child(1){stop-color:#059669}
+html[data-theme="light"] #gaugeGrad stop:nth-child(2){stop-color:#0e8ea8}
+html[data-theme="light"] #gaugeGrad stop:nth-child(3),
+html[data-theme="light"] #ringGrad stop:nth-child(2){stop-color:#4d7c0f}
+html[data-theme="light"] #radarFill stop:nth-child(1){stop-color:#0e8ea8}
+html[data-theme="light"] #radarFill stop:nth-child(2){stop-color:#059669}
 
 *{box-sizing:border-box}
 
@@ -1018,8 +1034,8 @@ h1,h2,h3,h4,p{margin-top:0}
 .bar-fill.lv5{background:linear-gradient(90deg,var(--c1),var(--c3))}
 .bar-fill.lv4{background:linear-gradient(90deg,var(--c2),var(--c1))}
 .bar-fill.lv3{background:linear-gradient(90deg,var(--c4),var(--c3))}
-.bar-fill.lv2{background:linear-gradient(90deg,#fb923c,var(--c4))}
-.bar-fill.lv1{background:linear-gradient(90deg,var(--c5),#fb923c)}
+.bar-fill.lv2{background:linear-gradient(90deg,var(--c-orange),var(--c4))}
+.bar-fill.lv1{background:linear-gradient(90deg,var(--c5),var(--c-orange))}
 
 .demo-block{
   display:grid;
@@ -1162,7 +1178,7 @@ td.num{
 .badge.lv3{color:#eab308;border-color:rgba(234,179,8,.4)}
 .badge.lv3::before{background:#eab308;box-shadow:0 0 8px rgba(234,179,8,.7)}
 .badge.lv2{color:#fb923c;border-color:rgba(251,146,60,.4)}
-.badge.lv2::before{background:#fb923c}
+.badge.lv2::before{background:var(--c-orange)}
 .badge.lv1{color:#f43f5e;border-color:rgba(244,63,94,.4)}
 .badge.lv1::before{background:#f43f5e}
 
@@ -1714,13 +1730,15 @@ const ratingLabels = {
   2:"น้อย",
   1:"น้อยที่สุด"
 };
-const scoreColors = {
-  5:"#10b981",
-  4:"#22d3ee",
-  3:"#eab308",
-  2:"#fb923c",
-  1:"#f43f5e"
+const scorePalettes = {
+  light:{5:"#059669",4:"#0e8ea8",3:"#ca8a04",2:"#ea580c",1:"#e11d48"},
+  dark:{5:"#10b981",4:"#22d3ee",3:"#eab308",2:"#fb923c",1:"#f43f5e"}
 };
+
+function scoreColor(score){
+  const theme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  return scorePalettes[theme][score];
+}
 const state = {
   dashboard:null
 };
@@ -1853,6 +1871,19 @@ function getDashboardWithGoogleScript(){
   });
 }
 
+async function loadDashboardFetch(url){
+  const endpoint = new URL(url,location.href);
+  endpoint.searchParams.set("action","dashboard");
+
+  const response = await fetch(endpoint.toString(),{method:"GET",redirect:"follow"});
+
+  if(!response.ok){
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return await response.json();
+}
+
 function loadDashboardJsonp(url){
   return new Promise((resolve,reject) => {
     const callbackName = `dashboardCallback_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -1885,6 +1916,20 @@ function loadDashboardJsonp(url){
   });
 }
 
+// Apps Script answers with Access-Control-Allow-Origin:* so a plain fetch
+// works cross-origin; JSONP stays as a fallback for stricter environments.
+async function loadDashboardRemote(url){
+  if(!url){
+    throw new Error("Missing Web App URL");
+  }
+
+  try{
+    return await loadDashboardFetch(url);
+  }catch(error){
+    return await loadDashboardJsonp(url);
+  }
+}
+
 async function loadDashboard(){
   refs.refreshButton.disabled = true;
   refs.refreshButton.classList.add("loading");
@@ -1894,7 +1939,7 @@ async function loadDashboard(){
   try{
     const data = canUseGoogleScript()
       ? await getDashboardWithGoogleScript()
-      : await loadDashboardJsonp(resolveGasUrl());
+      : await loadDashboardRemote(resolveGasUrl());
 
     state.dashboard = data;
     document.body.classList.remove("is-loading");
@@ -1905,7 +1950,7 @@ async function loadDashboard(){
     state.dashboard = null;
     document.body.classList.remove("is-loading");
     renderDashboard(createEmptyDashboard());
-    setStatus("โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบ URL, สิทธิ์ Web App หรือการ deploy ล่าสุด","error");
+    setStatus(`โหลดข้อมูลไม่สำเร็จ (${error && error.message ? error.message : "unknown error"}) กรุณาตรวจสอบ URL, สิทธิ์ Web App หรือการ deploy ล่าสุด`,"error");
     showToast("โหลดข้อมูลไม่สำเร็จ",true);
   }finally{
     refs.refreshButton.disabled = false;
@@ -2112,7 +2157,7 @@ function renderDonut(distribution){
     const share = total ? row.count / total : 0;
     const length = circumference * share;
     const dash = `${length} ${circumference - length}`;
-    const segment = `<circle cx="80" cy="80" r="${radius}" stroke="${scoreColors[row.score]}" stroke-dasharray="${dash}" stroke-dashoffset="${-offset}" stroke-linecap="butt"><title>${row.score} ${row.label}: ${row.count} ครั้ง (${fixed(row.percent)}%)</title></circle>`;
+    const segment = `<circle cx="80" cy="80" r="${radius}" stroke="${scoreColor(row.score)}" stroke-dasharray="${dash}" stroke-dashoffset="${-offset}" stroke-linecap="butt"><title>${row.score} ${row.label}: ${row.count} ครั้ง (${fixed(row.percent)}%)</title></circle>`;
     offset += length;
     return segment;
   }).join("");
@@ -2122,7 +2167,7 @@ function renderDonut(distribution){
 
   const legend = rows.map(row => `
     <div class="legend-row">
-      <i style="background:${scoreColors[row.score]}"></i>
+      <i style="background:${scoreColor(row.score)}"></i>
       <span>${row.score} · ${escapeHtml(row.label)}</span>
       <b>${fixed(row.percent)}%</b>
     </div>

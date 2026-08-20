@@ -30,31 +30,38 @@
 }
 
 html[data-theme="light"]{
-  --bg:#f4faf7;
-  --bg-deep:#e8f4ed;
-  --ink:#062b1e;
-  --ink-2:#1f4a37;
-  --muted:#5d7d6d;
-  --line:rgba(6,70,45,.11);
-  --line-strong:rgba(6,70,45,.2);
-  --glass:rgba(255,255,255,.74);
-  --glass-2:rgba(255,255,255,.88);
-  --glass-hi:rgba(255,255,255,.96);
+  --c1:#059669;
+  --c2:#0e8ea8;
+  --c3:#65a30d;
+  --c4:#d97706;
+  --c5:#e11d48;
+  --c-orange:#ea580c;
+  --bg:#e4f0e9;
+  --bg-deep:#d2e6da;
+  --ink:#052419;
+  --ink-2:#173c2c;
+  --muted:#4d6b5c;
+  --line:rgba(5,55,36,.16);
+  --line-strong:rgba(5,55,36,.28);
+  --glass:rgba(255,255,255,.7);
+  --glass-2:rgba(255,255,255,.84);
+  --glass-hi:rgba(255,255,255,.93);
   --field:#ffffff;
-  --track:rgba(6,70,45,.08);
-  --accent:#0f9d63;
-  --accent-ink:#04724a;
-  --glow:rgba(16,185,129,.26);
-  --shadow:0 22px 48px -24px rgba(6,70,45,.3);
-  --shadow-lg:0 42px 86px -42px rgba(6,70,45,.38);
-  --orb-1:rgba(16,185,129,.34);
-  --orb-2:rgba(34,211,238,.26);
-  --orb-3:rgba(163,230,53,.3);
-  --grid-line:rgba(6,70,45,.05);
+  --track:rgba(5,55,36,.13);
+  --accent:#0b8654;
+  --accent-ink:#045c3b;
+  --glow:rgba(5,150,105,.3);
+  --shadow:0 22px 48px -22px rgba(4,50,32,.42);
+  --shadow-lg:0 42px 86px -38px rgba(4,50,32,.5);
+  --orb-1:rgba(5,150,105,.4);
+  --orb-2:rgba(14,142,168,.3);
+  --orb-3:rgba(101,163,13,.32);
+  --grid-line:rgba(5,55,36,.075);
   --on-accent:#ffffff;
 }
 
 html[data-theme="dark"]{
+  --c-orange:#fb923c;
   --bg:#04100c;
   --bg-deep:#020806;
   --ink:#eafff5;
@@ -78,6 +85,15 @@ html[data-theme="dark"]{
   --grid-line:rgba(140,255,210,.045);
   --on-accent:#03150e;
 }
+
+/* GRADIENT STOPS (light mode runs deeper) */
+html[data-theme="light"] #gaugeGrad stop:nth-child(1),
+html[data-theme="light"] #ringGrad stop:nth-child(1){stop-color:#059669}
+html[data-theme="light"] #gaugeGrad stop:nth-child(2){stop-color:#0e8ea8}
+html[data-theme="light"] #gaugeGrad stop:nth-child(3),
+html[data-theme="light"] #ringGrad stop:nth-child(2){stop-color:#4d7c0f}
+html[data-theme="light"] #radarFill stop:nth-child(1){stop-color:#0e8ea8}
+html[data-theme="light"] #radarFill stop:nth-child(2){stop-color:#059669}
 
 *{box-sizing:border-box}
 
@@ -696,11 +712,11 @@ input:focus,select:focus,textarea:focus{
   to{transform:translateX(120%)}
 }
 
-.rating-pill[data-score="5"]{--pill:linear-gradient(135deg,#10b981,#a3e635)}
-.rating-pill[data-score="4"]{--pill:linear-gradient(135deg,#22d3ee,#10b981)}
-.rating-pill[data-score="3"]{--pill:linear-gradient(135deg,#f59e0b,#a3e635)}
-.rating-pill[data-score="2"]{--pill:linear-gradient(135deg,#fb923c,#f59e0b)}
-.rating-pill[data-score="1"]{--pill:linear-gradient(135deg,#f43f5e,#fb923c)}
+.rating-pill[data-score="5"]{--pill:linear-gradient(135deg,var(--c1),var(--c3))}
+.rating-pill[data-score="4"]{--pill:linear-gradient(135deg,var(--c2),var(--c1))}
+.rating-pill[data-score="3"]{--pill:linear-gradient(135deg,var(--c4),var(--c3))}
+.rating-pill[data-score="2"]{--pill:linear-gradient(135deg,var(--c-orange),var(--c4))}
+.rating-pill[data-score="1"]{--pill:linear-gradient(135deg,var(--c5),var(--c-orange))}
 .rating-choice input:checked + .rating-pill{background:var(--pill)}
 
 /* ============================================================
@@ -1565,6 +1581,73 @@ function saveWithGoogleScript(payload){
   });
 }
 
+function loadDashboardJsonp(url){
+  return new Promise((resolve,reject) => {
+    const callbackName = `formCallback_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    const script = document.createElement("script");
+    const timer = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("Dashboard request timed out"));
+    },12000);
+
+    function cleanup(){
+      window.clearTimeout(timer);
+      delete window[callbackName];
+      script.remove();
+    }
+
+    window[callbackName] = payload => {
+      cleanup();
+      resolve(payload);
+    };
+
+    const endpoint = new URL(url,location.href);
+    endpoint.searchParams.set("action","dashboard");
+    endpoint.searchParams.set("callback",callbackName);
+    script.src = endpoint.toString();
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("Dashboard request failed"));
+    };
+    document.body.appendChild(script);
+  });
+}
+
+async function loadDashboardFetch(url){
+  const endpoint = new URL(url,location.href);
+  endpoint.searchParams.set("action","dashboard");
+
+  const response = await fetch(endpoint.toString(),{method:"GET",redirect:"follow"});
+
+  if(!response.ok){
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+async function getResponseCount(){
+  const url = resolveGasUrl();
+
+  if(!url){
+    return null;
+  }
+
+  try{
+    return Number(((await loadDashboardFetch(url)) || {}).totalResponses || 0);
+  }catch(error){
+    try{
+      return Number(((await loadDashboardJsonp(url)) || {}).totalResponses || 0);
+    }catch(fallbackError){
+      return null;
+    }
+  }
+}
+
+function wait(ms){
+  return new Promise(resolve => window.setTimeout(resolve,ms));
+}
+
 async function sendPayload(payload){
   if(canUseGoogleScript()){
     return await saveWithGoogleScript(payload);
@@ -1575,14 +1658,45 @@ async function sendPayload(payload){
     throw new Error("Missing GAS URL");
   }
 
-  await fetch(url,{
-    method:"POST",
-    mode:"no-cors",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify(payload)
-  });
+  const body = JSON.stringify(payload);
+  const headers = {"Content-Type":"text/plain;charset=utf-8"};
 
-  return {status:"success"};
+  // Apps Script sends Access-Control-Allow-Origin:* so a real CORS request
+  // works and — unlike no-cors — actually surfaces failures.
+  try{
+    const response = await fetch(url,{method:"POST",headers:headers,body:body});
+    if(response.ok){
+      return {status:"success"};
+    }
+  }catch(error){
+    /* fall back to an opaque request, verified against the sheet below */
+  }
+
+  await fetch(url,{method:"POST",mode:"no-cors",headers:headers,body:body});
+  return {status:"submitted"};
+}
+
+// The opaque fallback cannot report failures, so confirm the row really
+// reached the sheet by re-reading the response count.
+async function confirmSaved(previousCount){
+  if(previousCount === null){
+    return true;
+  }
+
+  for(let attempt = 0;attempt < 3;attempt += 1){
+    await wait(attempt === 0 ? 900 : 1800);
+    const current = await getResponseCount();
+
+    if(current === null){
+      return true;
+    }
+
+    if(current > previousCount){
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function focusQuestion(index){
@@ -1629,7 +1743,20 @@ async function submitForm(event){
   setStatus("กำลังบันทึกข้อมูล...");
 
   try{
+    const usesGoogleScript = canUseGoogleScript();
+    const previousCount = usesGoogleScript ? null : await getResponseCount();
+
     await sendPayload(buildPayload());
+
+    if(!usesGoogleScript){
+      setStatus("กำลังตรวจสอบการบันทึก...");
+      const saved = await confirmSaved(previousCount);
+
+      if(!saved){
+        throw new Error("Response was not stored in the sheet");
+      }
+    }
+
     clearDraft();
     evaluationForm.reset();
     updateSummary();
@@ -1638,8 +1765,8 @@ async function submitForm(event){
     showToast("บันทึกข้อมูลเรียบร้อยแล้ว");
     window.scrollTo({top:0,behavior:"smooth"});
   }catch(error){
-    setStatus("บันทึกไม่สำเร็จ กรุณาตรวจสอบ URL และสิทธิ์ของ Google Apps Script Web App","error");
-    showToast("บันทึกไม่สำเร็จ",true);
+    setStatus("บันทึกไม่สำเร็จ ข้อมูลยังไม่ถูกเขียนลงชีต กรุณาตรวจสอบการ deploy Web App (Execute as: Me, Who has access: Anyone) แล้วลองใหม่อีกครั้ง","error");
+    showToast("บันทึกไม่สำเร็จ ข้อมูลไม่ถูกบันทึก",true);
   }finally{
     submitButton.disabled = false;
     submitButton.classList.remove("loading");
