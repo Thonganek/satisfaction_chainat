@@ -2,7 +2,9 @@
 <html lang="th" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#eff7f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#04100c" media="(prefers-color-scheme: dark)">
 <title>แบบประเมินความพึงพอใจ โครงการพัฒนานักวิจัย</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1033,6 +1035,95 @@ form > section:nth-of-type(4) .section-number{background:var(--a7);color:#fff;bo
 .field-grid .field:nth-child(4n+2) label .ico{stroke:var(--a2)}
 .field-grid .field:nth-child(4n+3) label .ico{stroke:var(--a3)}
 .field-grid .field:nth-child(4n+4) label .ico{stroke:var(--a7)}
+
+/* ============================================================
+   MOBILE LAYOUT
+   ============================================================ */
+@media (max-width:760px){
+  html{scroll-padding-top:74px}
+  body{padding-bottom:calc(128px + env(safe-area-inset-bottom,0px))}
+
+  .page{width:calc(100% - 16px);padding:12px 0 18px}
+  .navbar{padding:8px 0}
+  .nav-inner{width:calc(100% - 16px);gap:8px}
+
+  /* 16px keeps iOS from zooming the page on focus */
+  input,select,textarea{font-size:16px;padding:13px 14px;border-radius:12px}
+  textarea{min-height:104px}
+  select{background-position:calc(100% - 20px) 21px,calc(100% - 15px) 21px}
+
+  .hero{padding:22px 18px;border-radius:20px}
+  .hero h1{margin:12px 0 10px;font-size:1.45rem;line-height:1.35}
+  .hero .lead{font-size:.92rem}
+  .hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:18px}
+  .meta-card{padding:12px 13px}
+  .meta-card strong{font-size:1.08rem}
+  .meta-card span{font-size:.73rem}
+
+  .section{margin-top:14px;border-radius:20px}
+  .section-header{padding:14px;gap:11px}
+  .section-number{width:36px;height:36px;border-radius:11px;font-size:.85rem}
+  .section h2{font-size:1.02rem}
+  .section-subtitle{font-size:.8rem}
+  .section-body{padding:14px}
+  .header-side{width:100%;margin-left:0}
+  .header-side .button{width:100%}
+  .header-side .pill{width:100%;justify-content:center}
+
+  .question-groups{gap:12px}
+  .group-title{padding:12px 13px;gap:10px}
+  .group-title h3{font-size:.92rem}
+  .group-ring,.group-ring svg{width:36px;height:36px}
+  .group-range{padding:3px 9px;font-size:.72rem}
+
+  .question{padding:14px 13px;gap:12px}
+  .question-text{gap:9px;font-size:.95rem}
+  .question-index{width:26px;height:26px;border-radius:9px;font-size:.72rem}
+
+  /* wider tap targets: drop the wrapper chrome and give the row full width */
+  .rating-grid{gap:6px;padding:0;border:0;background:none}
+  .rating-pill{
+    min-height:62px;
+    padding:8px 2px;
+    border-color:var(--line-strong);
+    border-radius:14px;
+    font-size:.6rem;
+    line-height:1.15;
+  }
+  .rating-pill strong{font-size:1.3rem}
+  .rating-choice:hover .rating-pill{transform:none;box-shadow:none}
+
+  .summary-gauge{padding:16px;gap:14px}
+  .summary-box{padding:15px}
+  .summary-value{font-size:1.6rem}
+
+  .dock{
+    width:calc(100% - 16px);
+    bottom:8px;
+    gap:9px;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));
+    border-radius:18px;
+  }
+  .dock-line{gap:8px;font-size:.8rem}
+  .dock-track{height:6px}
+  .dock-actions{width:100%;gap:8px}
+  #jumpButton{flex:0 0 48px;width:48px;padding:0}
+  #jumpButton span{display:none}
+  #submitButton{flex:1;min-height:48px}
+  .status{font-size:.78rem}
+  .after-save{width:100%}
+  .after-save .button{width:100%}
+
+  .toast{bottom:calc(120px + env(safe-area-inset-bottom,0px));width:calc(100% - 32px);justify-content:center}
+  .footnote{margin-top:18px;font-size:.75rem}
+}
+
+@media (max-width:380px){
+  .rating-grid{gap:4px}
+  .rating-pill{font-size:.53rem;min-height:58px}
+  .rating-pill strong{font-size:1.15rem}
+  .hero-meta{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
