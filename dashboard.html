@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="dark">
+<html lang="th" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,26 +31,26 @@
 
 /* ---------- LIGHT ---------- */
 html[data-theme="light"]{
-  --bg:#eef7f1;
-  --bg-deep:#e2f1e8;
-  --ink:#08251a;
-  --ink-2:#2c4a3b;
-  --muted:#5d7a6b;
-  --line:rgba(6,64,40,.13);
-  --line-strong:rgba(6,64,40,.22);
+  --bg:#f4faf7;
+  --bg-deep:#e8f4ed;
+  --ink:#062b1e;
+  --ink-2:#1f4a37;
+  --muted:#5d7d6d;
+  --line:rgba(6,70,45,.11);
+  --line-strong:rgba(6,70,45,.2);
   --glass:rgba(255,255,255,.74);
-  --glass-2:rgba(255,255,255,.92);
+  --glass-2:rgba(255,255,255,.88);
   --glass-hi:rgba(255,255,255,.96);
-  --track:rgba(6,64,40,.09);
+  --track:rgba(6,70,45,.08);
   --accent:#0f9d63;
-  --accent-ink:#066b45;
-  --glow:rgba(16,185,129,.28);
-  --shadow:0 24px 60px -24px rgba(4,60,38,.35);
-  --shadow-lg:0 40px 90px -40px rgba(4,60,38,.45);
-  --orb-1:rgba(16,185,129,.42);
-  --orb-2:rgba(34,211,238,.32);
-  --orb-3:rgba(163,230,53,.34);
-  --grid-line:rgba(6,64,40,.055);
+  --accent-ink:#04724a;
+  --glow:rgba(16,185,129,.26);
+  --shadow:0 22px 48px -24px rgba(6,70,45,.3);
+  --shadow-lg:0 42px 86px -42px rgba(6,70,45,.38);
+  --orb-1:rgba(16,185,129,.34);
+  --orb-2:rgba(34,211,238,.26);
+  --orb-3:rgba(163,230,53,.3);
+  --grid-line:rgba(6,70,45,.05);
   --on-accent:#ffffff;
 }
 
@@ -1814,8 +1814,13 @@ function toggleTheme(){
 /* ============================================================
    DATA LOADING
    ============================================================ */
+function isAppsScriptHost(){
+  return canUseGoogleScript()
+    || /script\.google\.com|googleusercontent\.com/.test(location.hostname);
+}
+
 function setupLinks(){
-  refs.formLink.href = location.protocol === "file:" ? "index.html" : "?";
+  refs.formLink.href = isAppsScriptHost() ? "?" : "index.html";
 }
 
 function setStatus(message,type){
@@ -2576,7 +2581,7 @@ function setupSpotlight(){
 /* ============================================================
    INIT
    ============================================================ */
-applyTheme(readStoredTheme() || "dark");
+applyTheme(readStoredTheme() || "light");
 setupLinks();
 setupReveal();
 setupScrollSpy();

@@ -1,684 +1,1194 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>แบบประเมินความพึงพอใจ โครงการพัฒนานักวิจัย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
 :root{
-  --bg:#effcf4;
-  --bg-2:#f8fff9;
-  --surface:#ffffff;
-  --soft:#f1fbf4;
-  --ink:#10251b;
-  --muted:#5b7566;
-  --line:#cfe8d8;
-  --primary:#16a34a;
-  --primary-dark:#0f7a39;
-  --primary-soft:#dcfce7;
-  --lime:#a3e635;
-  --teal:#0d9488;
-  --danger:#b42318;
-  --success:#087443;
-  --shadow:0 22px 60px rgba(16,92,48,.15);
-  --radius:8px;
+  --font-sans:"IBM Plex Sans Thai","Noto Sans Thai","Segoe UI",Tahoma,sans-serif;
+  --font-num:"Space Grotesk","IBM Plex Sans Thai",system-ui,sans-serif;
+
+  --r-sm:10px;
+  --r-md:16px;
+  --r-lg:22px;
+  --r-xl:28px;
+
+  --c1:#10b981;
+  --c2:#22d3ee;
+  --c3:#a3e635;
+  --c4:#f59e0b;
+  --c5:#f43f5e;
+
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+
+html[data-theme="light"]{
+  --bg:#f4faf7;
+  --bg-deep:#e8f4ed;
+  --ink:#062b1e;
+  --ink-2:#1f4a37;
+  --muted:#5d7d6d;
+  --line:rgba(6,70,45,.11);
+  --line-strong:rgba(6,70,45,.2);
+  --glass:rgba(255,255,255,.74);
+  --glass-2:rgba(255,255,255,.88);
+  --glass-hi:rgba(255,255,255,.96);
+  --field:#ffffff;
+  --track:rgba(6,70,45,.08);
+  --accent:#0f9d63;
+  --accent-ink:#04724a;
+  --glow:rgba(16,185,129,.26);
+  --shadow:0 22px 48px -24px rgba(6,70,45,.3);
+  --shadow-lg:0 42px 86px -42px rgba(6,70,45,.38);
+  --orb-1:rgba(16,185,129,.34);
+  --orb-2:rgba(34,211,238,.26);
+  --orb-3:rgba(163,230,53,.3);
+  --grid-line:rgba(6,70,45,.05);
+  --on-accent:#ffffff;
+}
+
+html[data-theme="dark"]{
+  --bg:#04100c;
+  --bg-deep:#020806;
+  --ink:#eafff5;
+  --ink-2:#bfe6d5;
+  --muted:#7fa997;
+  --line:rgba(120,255,205,.13);
+  --line-strong:rgba(120,255,205,.26);
+  --glass:rgba(11,34,26,.62);
+  --glass-2:rgba(13,40,31,.78);
+  --glass-hi:rgba(18,52,40,.9);
+  --field:rgba(6,24,18,.75);
+  --track:rgba(140,255,210,.1);
+  --accent:#34d399;
+  --accent-ink:#7ff3c4;
+  --glow:rgba(52,211,153,.35);
+  --shadow:0 28px 70px -28px rgba(0,0,0,.85);
+  --shadow-lg:0 46px 110px -46px rgba(0,0,0,.95);
+  --orb-1:rgba(16,185,129,.36);
+  --orb-2:rgba(34,211,238,.26);
+  --orb-3:rgba(163,230,53,.2);
+  --grid-line:rgba(140,255,210,.045);
+  --on-accent:#03150e;
 }
 
 *{box-sizing:border-box}
 
 html{
   scroll-behavior:smooth;
+  scroll-padding-top:104px;
 }
 
 body{
   margin:0;
   min-height:100vh;
+  padding-bottom:96px;
   color:var(--ink);
-  background:
-    radial-gradient(circle at top left,rgba(163,230,53,.34),transparent 28rem),
-    radial-gradient(circle at top right,rgba(22,163,74,.18),transparent 26rem),
-    linear-gradient(180deg,var(--bg-2),var(--bg));
-  font-family:"Segoe UI",Tahoma,"Noto Sans Thai",sans-serif;
-  line-height:1.65;
+  background:var(--bg);
+  font-family:var(--font-sans);
+  font-size:15px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 
-button,input,select,textarea{
-  font:inherit;
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4,p{margin-top:0}
+::selection{background:var(--glow);color:var(--ink)}
+
+/* ============================================================
+   AMBIENT
+   ============================================================ */
+.ambient{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  overflow:hidden;
+  background:radial-gradient(120% 80% at 50% -10%,var(--bg-deep),transparent 60%),var(--bg);
 }
 
-.page{
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.85;will-change:transform}
+.orb.a{width:46rem;height:46rem;left:-14rem;top:-18rem;background:var(--orb-1);animation:drift1 26s var(--ease) infinite alternate}
+.orb.b{width:40rem;height:40rem;right:-12rem;top:-8rem;background:var(--orb-2);animation:drift2 32s var(--ease) infinite alternate}
+.orb.c{width:36rem;height:36rem;left:35%;bottom:-16rem;background:var(--orb-3);animation:drift3 38s var(--ease) infinite alternate}
+
+@keyframes drift1{to{transform:translate3d(6rem,4rem,0) scale(1.12)}}
+@keyframes drift2{to{transform:translate3d(-7rem,5rem,0) scale(1.08)}}
+@keyframes drift3{to{transform:translate3d(4rem,-5rem,0) scale(1.15)}}
+
+.mesh{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(110% 70% at 50% 0%,#000 30%,transparent 78%);
+  -webkit-mask-image:radial-gradient(110% 70% at 50% 0%,#000 30%,transparent 78%);
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.progress-rail{position:fixed;left:0;top:0;right:0;height:3px;z-index:60}
+
+.progress-rail span{
+  display:block;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));
+  box-shadow:0 0 14px var(--glow);
+  transition:width .12s linear;
+}
+
+.navbar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  padding:12px 0;
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  background:linear-gradient(180deg,var(--glass-2),transparent);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s ease,background .3s ease,padding .3s ease;
+}
+
+.navbar.stuck{padding:8px 0;border-bottom-color:var(--line);background:var(--glass-2)}
+
+.nav-inner{
   width:min(1180px,calc(100% - 32px));
   margin:0 auto;
-  padding:24px 0 44px;
-}
-
-.shell{
-  border:1px solid rgba(207,232,216,.95);
-  border-radius:var(--radius);
-  background:rgba(255,255,255,.88);
-  box-shadow:var(--shadow);
-  overflow:hidden;
-}
-
-.hero{
-  display:grid;
-  gap:18px;
-  padding:30px;
-  color:#fff;
-  background:
-    linear-gradient(135deg,rgba(22,163,74,.97),rgba(13,148,136,.93)),
-    #16a34a;
-}
-
-.topbar{
   display:flex;
-  justify-content:space-between;
   align-items:center;
   gap:14px;
-  flex-wrap:wrap;
 }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin:0;
-  font-weight:900;
-}
+.brand{display:flex;align-items:center;gap:11px;margin:0;font-weight:700;white-space:nowrap}
 
 .brand-mark{
+  position:relative;
   display:grid;
   place-items:center;
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  color:#116329;
-  background:#fff;
-  font-weight:900;
+  width:40px;height:40px;
+  flex:0 0 auto;
+  border-radius:13px;
+  color:var(--on-accent);
+  background:linear-gradient(140deg,var(--c1),var(--c2));
+  font-family:var(--font-num);
+  font-weight:700;
+  box-shadow:0 10px 26px -8px var(--glow);
 }
 
-.nav-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
+.brand-mark::after{
+  content:"";
+  position:absolute;
+  inset:-3px;
+  border-radius:16px;
+  border:1px solid var(--line-strong);
+  animation:pulseRing 3.2s ease-in-out infinite;
 }
 
-.nav-button,
-.ghost-button,
-.submit-button{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:44px;
-  border-radius:var(--radius);
-  padding:10px 16px;
-  font-weight:900;
-  text-decoration:none;
-  cursor:pointer;
-  transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease;
+@keyframes pulseRing{
+  0%,100%{opacity:.5;transform:scale(1)}
+  50%{opacity:.15;transform:scale(1.08)}
 }
 
-.nav-button{
-  border:1px solid rgba(255,255,255,.34);
-  color:#fff;
-  background:rgba(255,255,255,.16);
-}
-
-.nav-button:hover,
-.ghost-button:hover,
-.submit-button:hover{
-  transform:translateY(-1px);
-}
-
-.hero-copy{
-  max-width:920px;
-}
-
-.eyebrow{
-  margin:0 0 6px;
-  color:rgba(255,255,255,.82);
-  font-weight:800;
-}
-
-h1,h2,h3,p{
-  margin-top:0;
-}
-
-h1{
-  margin-bottom:0;
-  font-size:clamp(1.7rem,3vw,2.65rem);
-  line-height:1.28;
-  letter-spacing:0;
-}
-
-.hero-meta{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px;
-}
-
-.meta-card{
-  min-height:88px;
-  padding:14px;
-  border:1px solid rgba(255,255,255,.26);
-  border-radius:var(--radius);
-  background:rgba(255,255,255,.14);
-}
-
-.meta-card strong{
+.brand small{
   display:block;
-  font-size:1.3rem;
+  color:var(--muted);
+  font-size:.7rem;
+  font-weight:500;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
   line-height:1.2;
 }
 
-.meta-card span{
-  color:rgba(255,255,255,.86);
-  font-weight:700;
+.nav-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.button{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:42px;
+  padding:9px 18px;
+  border:1px solid var(--line-strong);
+  border-radius:12px;
+  color:var(--ink);
+  background:var(--glass);
+  font-size:.88rem;
+  font-weight:600;
+  text-decoration:none;
+  cursor:pointer;
+  overflow:hidden;
+  transition:transform .2s var(--ease),box-shadow .25s ease,border-color .25s ease,background .25s ease,opacity .2s ease;
 }
 
-.form{
-  display:grid;
-  gap:18px;
-  padding:22px;
+.button:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 14px 30px -14px var(--glow)}
+.button:active{transform:translateY(0)}
+.button:disabled{opacity:.55;cursor:progress;transform:none;box-shadow:none}
+
+.button.primary{
+  border-color:transparent;
+  color:var(--on-accent);
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  box-shadow:0 14px 32px -14px var(--glow);
 }
 
-.section{
+.button.primary::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.45) 50%,transparent 80%);
+  transform:translateX(-120%);
+  transition:transform .7s var(--ease);
+}
+
+.button.primary:hover::after{transform:translateX(120%)}
+
+.button.icon{width:42px;padding:0;border-radius:12px}
+.button.lg{min-height:52px;padding:12px 28px;font-size:.95rem;border-radius:15px}
+
+.button .ico{
+  width:17px;height:17px;
+  flex:0 0 auto;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.button.loading .ico.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page{
+  width:min(1180px,calc(100% - 32px));
+  margin:0 auto;
+  padding:26px 0 40px;
+}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  position:relative;
+  padding:38px;
   border:1px solid var(--line);
-  border-radius:var(--radius);
-  background:var(--surface);
+  border-radius:var(--r-xl);
+  background:radial-gradient(90% 130% at 100% 0%,var(--glow),transparent 55%),var(--glass);
+  backdrop-filter:blur(22px) saturate(140%);
+  -webkit-backdrop-filter:blur(22px) saturate(140%);
+  box-shadow:var(--shadow-lg);
+  overflow:hidden;
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  top:-1px;left:8%;right:8%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:5px 13px 5px 9px;
+  border:1px solid var(--line-strong);
+  border-radius:999px;
+  background:var(--glass-2);
+  color:var(--ink-2);
+  font-size:.76rem;
+  font-weight:600;
+  letter-spacing:.6px;
+}
+
+.dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--c1);
+  animation:live 2s ease-out infinite;
+}
+
+@keyframes live{
+  0%{box-shadow:0 0 0 0 var(--glow)}
+  70%{box-shadow:0 0 0 9px transparent}
+  100%{box-shadow:0 0 0 0 transparent}
+}
+
+.hero h1{
+  margin:16px 0 12px;
+  max-width:24ch;
+  font-size:clamp(1.7rem,3.2vw,2.7rem);
+  font-weight:700;
+  line-height:1.26;
+  letter-spacing:-.4px;
+}
+
+.hero h1 .grad{
+  background:linear-gradient(110deg,var(--c1),var(--c2) 45%,var(--c3));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero .lead{max-width:64ch;margin:0;color:var(--muted);font-size:1rem}
+
+.hero-meta{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-top:26px;
+}
+
+.meta-card{
+  position:relative;
+  padding:16px 18px;
+  border:1px solid var(--line);
+  border-radius:var(--r-md);
+  background:var(--glass-2);
+  overflow:hidden;
+  transition:transform .3s var(--ease),border-color .3s ease;
+}
+
+.meta-card:hover{transform:translateY(-3px);border-color:var(--line-strong)}
+
+.meta-card strong{
+  display:block;
+  font-family:var(--font-num);
+  font-size:1.35rem;
+  font-weight:700;
+  line-height:1.2;
+  background:linear-gradient(140deg,var(--ink),var(--accent));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+
+.meta-card span{display:block;color:var(--muted);font-size:.82rem;font-weight:500}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section{
+  margin-top:20px;
+  border:1px solid var(--line);
+  border-radius:var(--r-xl);
+  background:var(--glass);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:var(--shadow);
   overflow:hidden;
 }
 
 .section-header{
   display:flex;
-  align-items:flex-start;
-  gap:13px;
-  padding:18px 20px;
+  align-items:center;
+  gap:14px;
+  padding:20px 24px;
   border-bottom:1px solid var(--line);
-  background:linear-gradient(90deg,var(--soft),#fff);
+  background:linear-gradient(100deg,var(--glass-2),transparent 70%);
 }
 
 .section-number{
+  position:relative;
   display:grid;
   place-items:center;
-  width:36px;
-  height:36px;
+  width:42px;height:42px;
   flex:0 0 auto;
-  border-radius:50%;
-  color:#fff;
-  background:var(--primary);
-  font-weight:900;
+  border-radius:14px;
+  color:var(--accent-ink);
+  background:var(--glass-hi);
+  border:1px solid var(--line-strong);
+  font-family:var(--font-num);
+  font-weight:700;
 }
 
-.section h2{
-  margin:0;
-  font-size:1.18rem;
-  line-height:1.35;
+.section-number::after{
+  content:"";
+  position:absolute;
+  left:8px;right:8px;bottom:-1px;
+  height:2px;
+  border-radius:2px;
+  background:linear-gradient(90deg,var(--c1),var(--c2));
 }
 
-.section-subtitle{
-  margin:2px 0 0;
-  color:var(--muted);
-  font-size:.94rem;
-  font-weight:650;
-}
+.section h2{margin:0;font-size:1.14rem;font-weight:700;letter-spacing:-.2px}
+.section-subtitle{margin:1px 0 0;color:var(--muted);font-size:.86rem;font-weight:500}
+.section-body{padding:24px}
 
-.section-body{
-  padding:20px;
-}
+.header-side{margin-left:auto;display:flex;align-items:center;gap:10px}
 
-.field-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:14px;
-}
-
-.field{
-  display:grid;
-  gap:7px;
-}
-
-.field-wide{
-  grid-column:span 2;
-}
+/* ============================================================
+   FIELDS
+   ============================================================ */
+.field-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.field{display:grid;gap:7px;min-width:0}
+.field-wide{grid-column:span 2}
 
 label{
-  color:#214d35;
-  font-size:.94rem;
-  font-weight:800;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--ink-2);
+  font-size:.85rem;
+  font-weight:600;
 }
+
+label .ico{
+  width:14px;height:14px;
+  stroke:var(--accent);
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.input-wrap{position:relative}
 
 input,select,textarea{
   width:100%;
-  border:1px solid #bfe0ca;
-  border-radius:var(--radius);
-  color:var(--ink);
-  background:#fff;
-  padding:11px 12px;
+  padding:12px 14px;
+  border:1px solid var(--line-strong);
+  border-radius:13px;
+  background:var(--field);
   outline:0;
-  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+  font-size:.92rem;
+  transition:border-color .22s ease,box-shadow .22s ease,transform .22s var(--ease);
 }
 
-textarea{
-  min-height:112px;
-  resize:vertical;
+select{
+  appearance:none;
+  -webkit-appearance:none;
+  padding-right:38px;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 20px) 20px,calc(100% - 15px) 20px;
+  background-size:5px 5px,5px 5px;
+  background-repeat:no-repeat;
 }
+
+textarea{min-height:120px;resize:vertical;line-height:1.65}
+
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.72}
+
+input:hover,select:hover,textarea:hover{border-color:var(--accent)}
 
 input:focus,select:focus,textarea:focus{
-  border-color:var(--primary);
-  box-shadow:0 0 0 4px rgba(34,197,94,.18);
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--glow);
 }
 
-.question-groups{
-  display:grid;
-  gap:18px;
-}
+/* ============================================================
+   QUESTION GROUPS
+   ============================================================ */
+.question-groups{display:grid;gap:16px}
 
 .question-group{
-  border:1px solid #d6eadc;
-  border-radius:var(--radius);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  background:var(--glass-2);
   overflow:hidden;
-  background:#fff;
+  transition:border-color .3s ease,box-shadow .3s ease;
 }
+
+.question-group:hover{border-color:var(--line-strong)}
+.question-group.done{border-color:rgba(16,185,129,.45);box-shadow:0 0 0 1px rgba(16,185,129,.16)}
 
 .group-title{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  gap:12px;
-  padding:14px 16px;
-  border-bottom:1px solid #d6eadc;
-  background:#f6fdf7;
+  gap:14px;
+  padding:15px 18px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(100deg,var(--glass-hi),transparent);
 }
 
-.group-title h3{
-  margin:0;
-  font-size:1rem;
+.group-ring{position:relative;width:42px;height:42px;flex:0 0 auto}
+.group-ring svg{transform:rotate(-90deg);display:block}
+.group-ring .t{fill:none;stroke:var(--track);stroke-width:4}
+
+.group-ring .b{
+  fill:none;
+  stroke:url(#ringGrad);
+  stroke-width:4;
+  stroke-linecap:round;
+  stroke-dasharray:107;
+  stroke-dashoffset:107;
+  transition:stroke-dashoffset .7s var(--ease);
 }
+
+.group-ring i{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  font-family:var(--font-num);
+  font-size:.68rem;
+  font-weight:700;
+  font-style:normal;
+  color:var(--muted);
+}
+
+.question-group.done .group-ring i{color:var(--accent)}
+
+.group-title h3{margin:0;font-size:1rem;font-weight:700;letter-spacing:-.1px;min-width:0}
 
 .group-range{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:4px 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--glass);
   color:var(--muted);
+  font-family:var(--font-num);
+  font-size:.78rem;
+  font-weight:600;
   white-space:nowrap;
-  font-size:.9rem;
-  font-weight:800;
 }
 
 .question{
   display:grid;
-  grid-template-columns:minmax(240px,1fr) minmax(520px,1.2fr);
-  gap:16px;
+  grid-template-columns:minmax(230px,1fr) minmax(480px,1.15fr);
+  gap:18px;
   align-items:center;
-  padding:16px;
-  border-bottom:1px solid #edf7ef;
+  padding:16px 18px;
+  border-bottom:1px solid var(--line);
+  transition:background .25s ease;
 }
 
-.question:last-child{
-  border-bottom:0;
+.question:last-child{border-bottom:0}
+.question:hover{background:var(--glass-hi)}
+
+.question.missing{
+  background:rgba(244,63,94,.07);
+  box-shadow:inset 3px 0 0 var(--c5);
+  animation:nudge .5s var(--ease);
 }
 
-.question-text{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  font-weight:800;
+@keyframes nudge{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  60%{transform:translateX(4px)}
 }
+
+.question-text{display:flex;gap:11px;align-items:flex-start;font-weight:500;min-width:0}
 
 .question-index{
   display:grid;
   place-items:center;
-  width:30px;
-  height:30px;
+  width:29px;height:29px;
   flex:0 0 auto;
-  border-radius:50%;
-  color:var(--primary-dark);
-  background:var(--primary-soft);
-  font-weight:900;
+  border-radius:10px;
+  border:1px solid var(--line-strong);
+  background:var(--glass);
+  color:var(--muted);
+  font-family:var(--font-num);
+  font-size:.78rem;
+  font-weight:700;
+  transition:color .25s ease,border-color .25s ease,background .25s ease;
 }
 
+.question.answered .question-index{
+  color:var(--on-accent);
+  border-color:transparent;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+}
+
+/* ---------- RATING ---------- */
 .rating-grid{
   display:grid;
   grid-template-columns:repeat(5,minmax(0,1fr));
   gap:8px;
+  padding:5px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--glass);
 }
 
-.rating-choice{
-  position:relative;
-  min-width:0;
-  cursor:pointer;
-}
-
-.rating-choice input{
-  position:absolute;
-  inset:0;
-  opacity:0;
-  cursor:pointer;
-}
+.rating-choice{position:relative;min-width:0;cursor:pointer}
+.rating-choice input{position:absolute;inset:0;opacity:0;cursor:pointer}
 
 .rating-pill{
+  position:relative;
   display:grid;
   place-items:center;
-  min-height:58px;
-  padding:8px 6px;
-  border:1px solid #bfe0ca;
-  border-radius:var(--radius);
-  background:#fff;
-  color:#255b39;
+  gap:1px;
+  min-height:60px;
+  padding:8px 4px;
+  border:1px solid transparent;
+  border-radius:12px;
+  background:var(--glass-2);
+  color:var(--muted);
   text-align:center;
-  font-size:.86rem;
-  font-weight:900;
-  line-height:1.2;
-  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease,background .15s ease,color .15s ease;
+  font-size:.74rem;
+  font-weight:600;
+  line-height:1.25;
+  overflow:hidden;
+  transition:transform .2s var(--ease),border-color .2s ease,box-shadow .2s ease,background .2s ease,color .2s ease;
 }
 
 .rating-pill strong{
   display:block;
-  font-size:1.12rem;
-  line-height:1.1;
+  font-family:var(--font-num);
+  font-size:1.18rem;
+  font-weight:700;
+  line-height:1.05;
+  color:var(--ink);
+  transition:color .2s ease;
 }
 
 .rating-choice:hover .rating-pill{
-  border-color:var(--primary);
-  box-shadow:0 10px 22px rgba(22,163,74,.16);
+  transform:translateY(-2px);
+  border-color:var(--accent);
+  box-shadow:0 10px 22px -12px var(--glow);
 }
 
 .rating-choice input:focus-visible + .rating-pill{
-  border-color:var(--primary);
-  box-shadow:0 0 0 4px rgba(34,197,94,.18);
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--glow);
 }
 
 .rating-choice input:checked + .rating-pill{
-  border-color:var(--primary);
-  background:linear-gradient(135deg,var(--primary),var(--teal));
   color:#fff;
-  box-shadow:0 12px 26px rgba(22,163,74,.26);
+  border-color:transparent;
+  transform:translateY(-2px);
+  box-shadow:0 14px 28px -14px var(--glow);
 }
 
-.feedback-grid,
+.rating-choice input:checked + .rating-pill strong{color:#fff}
+
+.rating-choice input:checked + .rating-pill::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.45) 50%,transparent 80%);
+  animation:sweep .7s var(--ease);
+}
+
+@keyframes sweep{
+  from{transform:translateX(-120%)}
+  to{transform:translateX(120%)}
+}
+
+.rating-pill[data-score="5"]{--pill:linear-gradient(135deg,#10b981,#a3e635)}
+.rating-pill[data-score="4"]{--pill:linear-gradient(135deg,#22d3ee,#10b981)}
+.rating-pill[data-score="3"]{--pill:linear-gradient(135deg,#f59e0b,#a3e635)}
+.rating-pill[data-score="2"]{--pill:linear-gradient(135deg,#fb923c,#f59e0b)}
+.rating-pill[data-score="1"]{--pill:linear-gradient(135deg,#f43f5e,#fb923c)}
+.rating-choice input:checked + .rating-pill{background:var(--pill)}
+
+/* ============================================================
+   SUMMARY
+   ============================================================ */
 .summary-strip{
   display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:auto repeat(3,minmax(0,1fr));
   gap:14px;
+  align-items:stretch;
 }
 
 .summary-box{
-  padding:15px;
-  border:1px solid #d6eadc;
-  border-radius:var(--radius);
-  background:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  background:var(--glass-2);
+  transition:transform .3s var(--ease),border-color .3s ease;
 }
 
+.summary-box:hover{transform:translateY(-3px);border-color:var(--line-strong)}
+
 .summary-label{
-  margin:0 0 4px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:0;
   color:var(--muted);
-  font-size:.9rem;
-  font-weight:800;
+  font-size:.82rem;
+  font-weight:600;
+}
+
+.summary-label .ico{
+  width:14px;height:14px;
+  stroke:var(--accent);
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 .summary-value{
   margin:0;
-  color:var(--primary-dark);
-  font-size:1.6rem;
-  font-weight:950;
-  line-height:1.18;
+  font-family:var(--font-num);
+  font-size:1.85rem;
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:-.5px;
+  background:linear-gradient(140deg,var(--ink),var(--accent));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
 }
 
-.action-bar{
+.summary-gauge{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  padding:18px 20px;
+  gap:16px;
+  padding:18px 22px;
   border:1px solid var(--line);
-  border-radius:var(--radius);
-  background:#fff;
+  border-radius:var(--r-lg);
+  background:radial-gradient(80% 120% at 100% 0%,var(--glow),transparent 60%),var(--glass-2);
 }
+
+.gauge{position:relative;width:104px;height:104px;flex:0 0 auto}
+.gauge svg{transform:rotate(-90deg);display:block}
+.gauge .track{fill:none;stroke:var(--track);stroke-width:9}
+
+.gauge .bar{
+  fill:none;
+  stroke:url(#gaugeGrad);
+  stroke-width:9;
+  stroke-linecap:round;
+  stroke-dasharray:283;
+  stroke-dashoffset:283;
+  transition:stroke-dashoffset 1s var(--ease);
+  filter:drop-shadow(0 0 8px var(--glow));
+}
+
+.gauge .cap{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  line-height:1.15;
+}
+
+.gauge .cap b{
+  display:block;
+  font-family:var(--font-num);
+  font-size:1.3rem;
+  font-weight:700;
+  color:var(--ink);
+}
+
+.gauge .cap span{display:block;color:var(--muted);font-size:.66rem;font-weight:600;letter-spacing:.8px}
+
+.gauge-copy{min-width:0}
+.gauge-copy h4{margin:0 0 2px;font-size:.95rem;font-weight:700}
+.gauge-copy p{margin:0;color:var(--muted);font-size:.84rem;font-weight:500}
+
+/* ============================================================
+   STICKY DOCK
+   ============================================================ */
+.dock{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  z-index:55;
+  width:min(1180px,calc(100% - 32px));
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:12px 14px 12px 20px;
+  border:1px solid var(--line-strong);
+  border-radius:20px;
+  background:var(--glass-hi);
+  backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  box-shadow:var(--shadow-lg);
+}
+
+.dock-progress{flex:1;min-width:0;display:grid;gap:7px}
+
+.dock-line{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
+  font-size:.84rem;
+  font-weight:600;
+}
+
+.dock-line b{font-family:var(--font-num);font-weight:700}
 
 .status{
   margin:0;
-  min-height:26px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
   color:var(--muted);
-  font-weight:800;
+  font-size:.82rem;
+  font-weight:600;
 }
 
-.status.error{color:var(--danger)}
-.status.success{color:var(--success)}
+.status:empty{display:none}
+.status.success{color:var(--accent-ink)}
+.status.error{color:var(--c5)}
 
-.submit-button{
-  border:0;
-  color:#fff;
-  background:linear-gradient(135deg,var(--primary),var(--teal));
-  box-shadow:0 12px 26px rgba(22,163,74,.22);
+.dock-track{
+  position:relative;
+  height:7px;
+  border-radius:999px;
+  background:var(--track);
+  overflow:hidden;
 }
 
-.submit-button:disabled{
-  cursor:not-allowed;
-  opacity:.65;
-  transform:none;
-  box-shadow:none;
+.dock-fill{
+  height:100%;
+  width:0;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));
+  box-shadow:0 0 12px -2px var(--glow);
+  transition:width .5s var(--ease);
 }
 
-.ghost-button{
-  border:1px solid var(--line);
-  color:var(--primary-dark);
-  background:#fff;
-}
+.dock-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 
-.after-save{
-  display:none;
-  gap:10px;
-  flex-wrap:wrap;
-}
+.after-save{display:none;gap:10px;flex-wrap:wrap}
+.after-save.show{display:flex}
 
-.after-save.show{
+/* ============================================================
+   TOAST / TO-TOP
+   ============================================================ */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:96px;
+  z-index:80;
   display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 20px;
+  border:1px solid var(--line-strong);
+  border-radius:14px;
+  background:var(--glass-hi);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  box-shadow:var(--shadow-lg);
+  font-size:.88rem;
+  font-weight:600;
+  transform:translate(-50%,140%);
+  opacity:0;
+  transition:transform .5s var(--ease),opacity .35s ease;
+  pointer-events:none;
 }
 
-@media (max-width:980px){
-  .hero-meta,
-  .field-grid,
-  .feedback-grid,
-  .summary-strip{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
+.toast.show{transform:translate(-50%,0);opacity:1}
+.toast .ico{width:17px;height:17px;stroke:var(--c1);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.toast.bad .ico{stroke:var(--c5)}
 
-  .question{
-    grid-template-columns:1fr;
-  }
+.footnote{margin:26px 0 0;color:var(--muted);text-align:center;font-size:.8rem;font-weight:500}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1080px){
+  .hero-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .summary-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .summary-gauge{grid-column:1 / -1}
+  .question{grid-template-columns:1fr}
+}
+
+@media (max-width:860px){
+  .field-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .brand small{display:none}
 }
 
 @media (max-width:640px){
-  .page{
-    width:min(100% - 20px,1180px);
-    padding:10px 0 28px;
-  }
+  body{font-size:14.5px;padding-bottom:150px}
+  .page{width:calc(100% - 20px);padding:16px 0 24px}
+  .nav-inner{width:calc(100% - 20px)}
+  .hero{padding:24px 20px}
+  .hero-meta{grid-template-columns:1fr}
+  .section-body{padding:16px}
+  .section-header{padding:16px}
+  .field-grid{grid-template-columns:1fr}
+  .field-wide{grid-column:auto}
+  .summary-strip{grid-template-columns:1fr}
+  .summary-gauge{flex-direction:column;text-align:center}
+  .rating-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:4px}
+  .rating-pill{min-height:64px;font-size:.62rem;padding:6px 2px}
+  .rating-pill strong{font-size:1.02rem}
+  .group-title{flex-wrap:wrap}
+  .group-range{margin-left:0}
+  .dock{width:calc(100% - 20px);bottom:10px;padding:12px 14px;flex-direction:column;align-items:stretch;gap:10px}
+  .dock-actions{width:100%}
+  .dock-actions .button{flex:1}
+  .toast{bottom:150px}
+  .nav-actions .button span{display:none}
+  .nav-actions .button{width:42px;padding:0}
+}
 
-  .hero,
-  .form{
-    padding:18px;
-  }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  html{scroll-behavior:auto}
+}
 
-  .hero-meta,
-  .field-grid,
-  .feedback-grid,
-  .summary-strip{
-    grid-template-columns:1fr;
-  }
-
-  .field-wide{
-    grid-column:auto;
-  }
-
-  .rating-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .rating-choice:first-child{
-    grid-column:span 2;
-  }
-
-  .group-title,
-  .action-bar{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .submit-button,
-  .ghost-button,
-  .nav-button{
-    width:100%;
-  }
+@media print{
+  .ambient,.mesh,.navbar,.progress-rail,.dock,.toast{display:none !important}
+  body{background:#fff;color:#111;padding-bottom:0}
+  .section,.hero,.question-group{background:#fff !important;border:1px solid #ccc !important;box-shadow:none !important;break-inside:avoid}
 }
 </style>
 </head>
 <body>
+
+<div class="ambient" aria-hidden="true">
+  <div class="orb a"></div>
+  <div class="orb b"></div>
+  <div class="orb c"></div>
+</div>
+<div class="mesh" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="55%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a3e635"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="progress-rail" aria-hidden="true"><span id="scrollProgress"></span></div>
+
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+    <p class="brand">
+      <span class="brand-mark">R</span>
+      <span>Research Evaluation<small>Satisfaction Survey</small></span>
+    </p>
+    <div class="nav-actions">
+      <button id="themeToggle" class="button icon" type="button" title="สลับธีมสว่าง/มืด" aria-label="สลับธีม">
+        <svg class="ico" id="themeIcon" viewBox="0 0 24 24"><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg>
+      </button>
+      <a id="dashboardLink" class="button" href="?page=dashboard">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M3 13h6V3H3zM13 21h8V11h-8zM13 7h8V3h-8zM3 21h6v-4H3z"/></svg>
+        <span>เปิด Dashboard</span>
+      </a>
+    </div>
+  </div>
+</header>
+
 <main class="page">
-  <div class="shell">
-    <header class="hero">
-      <div class="topbar">
-        <p class="brand"><span class="brand-mark">R</span> Research Evaluation</p>
-        <nav class="nav-actions" aria-label="เมนูหลัก">
-          <a id="dashboardLink" class="nav-button" href="?page=dashboard">เปิด Dashboard</a>
-        </nav>
-      </div>
-      <div class="hero-copy">
-        <p class="eyebrow">แบบประเมินความพึงพอใจ</p>
-        <h1>โครงการพัฒนานักวิจัยด้านภูมิปัญญาการแพทย์แผนไทยและการแพทย์ทางเลือกจังหวัดชัยนาท</h1>
-      </div>
-      <div class="hero-meta">
-        <div class="meta-card"><strong>20 ข้อ</strong><span>แบ่งเป็น 4 หมวดการประเมิน</span></div>
-        <div class="meta-card"><strong>5 ระดับ</strong><span>มาตราส่วนความพึงพอใจ</span></div>
-        <div class="meta-card"><strong>Live</strong><span>บันทึกและสรุปผลลง Google Sheet</span></div>
-      </div>
-    </header>
+  <section class="hero reveal">
+    <span class="pill"><span class="dot"></span> ONLINE · GOOGLE SHEETS</span>
+    <h1>แบบประเมินความพึงพอใจ<br><span class="grad">โครงการพัฒนานักวิจัยด้านภูมิปัญญาการแพทย์แผนไทย</span></h1>
+    <p class="lead">โครงการพัฒนานักวิจัยด้านภูมิปัญญาการแพทย์แผนไทยและการแพทย์ทางเลือก จังหวัดชัยนาท — ระบบบันทึกคำตอบลง Google Sheet และประมวลผลเป็นบทวิเคราะห์อัตโนมัติทันทีที่กดบันทึก</p>
+    <div class="hero-meta">
+      <div class="meta-card"><strong>20 ข้อ</strong><span>แบ่งเป็น 4 หมวดการประเมิน</span></div>
+      <div class="meta-card"><strong>5 ระดับ</strong><span>มาตราส่วนประมาณค่า Likert</span></div>
+      <div class="meta-card"><strong>~3 นาที</strong><span>เวลาเฉลี่ยในการตอบ</span></div>
+      <div class="meta-card"><strong>Auto-Save</strong><span>บันทึกแบบร่างในเครื่องอัตโนมัติ</span></div>
+    </div>
+  </section>
 
-    <form id="evaluationForm" class="form">
-      <section class="section" aria-labelledby="profileTitle">
-        <div class="section-header">
-          <span class="section-number">1</span>
-          <div>
-            <h2 id="profileTitle">ข้อมูลส่วนบุคคลของบุคลากร</h2>
-            <p class="section-subtitle">ข้อมูลสำหรับวิเคราะห์ภาพรวมของผู้ตอบแบบประเมิน</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="field-grid">
-            <div class="field field-wide">
-              <label for="name">ชื่อ-สกุล</label>
-              <input id="name" name="name" type="text" autocomplete="name" placeholder="ระบุชื่อ-สกุล">
-            </div>
-            <div class="field">
-              <label for="gender">เพศ</label>
-              <select id="gender" name="gender">
-                <option value="">เลือกเพศ</option>
-                <option value="ชาย">ชาย</option>
-                <option value="หญิง">หญิง</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="age">อายุ</label>
-              <input id="age" name="age" type="number" min="1" inputmode="numeric" placeholder="ปี">
-            </div>
-            <div class="field field-wide">
-              <label for="unit">หน่วยงาน</label>
-              <input id="unit" name="unit" type="text" placeholder="ระบุหน่วยงาน">
-            </div>
-            <div class="field">
-              <label for="position">ตำแหน่ง</label>
-              <input id="position" name="position" type="text" placeholder="ระบุตำแหน่ง">
-            </div>
-            <div class="field">
-              <label for="edu">ระดับการศึกษา</label>
-              <input id="edu" name="edu" type="text" placeholder="ระบุระดับการศึกษา">
-            </div>
-            <div class="field">
-              <label for="exp">ประสบการณ์ทำงาน</label>
-              <input id="exp" name="exp" type="text" placeholder="เช่น 5 ปี">
-            </div>
-            <div class="field">
-              <label for="resexp">ประสบการณ์วิจัย</label>
-              <input id="resexp" name="resexp" type="text" placeholder="เช่น 2 ปี">
-            </div>
-          </div>
-        </div>
-      </section>
+  <form id="evaluationForm" novalidate>
 
-      <section class="section" aria-labelledby="ratingTitle">
-        <div class="section-header">
-          <span class="section-number">2</span>
-          <div>
-            <h2 id="ratingTitle">แบบประเมินความพึงพอใจ</h2>
-            <p class="section-subtitle">คะแนน 5 หมายถึงมากที่สุด และ 1 หมายถึงน้อยที่สุด</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div id="questions" class="question-groups"></div>
-        </div>
-      </section>
-
-      <section class="section" aria-labelledby="commentTitle">
-        <div class="section-header">
-          <span class="section-number">3</span>
-          <div>
-            <h2 id="commentTitle">ความคิดเห็นเพิ่มเติม</h2>
-            <p class="section-subtitle">ข้อมูลปลายเปิดสำหรับประกอบการอภิปรายผล</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="feedback-grid">
-            <div class="field">
-              <label for="strength">จุดเด่นของโครงการ</label>
-              <textarea id="strength" name="strength" placeholder="ระบุจุดเด่นของโครงการ"></textarea>
-            </div>
-            <div class="field">
-              <label for="problem">ปัญหาและอุปสรรค</label>
-              <textarea id="problem" name="problem" placeholder="ระบุปัญหาและอุปสรรค"></textarea>
-            </div>
-            <div class="field">
-              <label for="suggest">ข้อเสนอแนะเพิ่มเติม</label>
-              <textarea id="suggest" name="suggest" placeholder="ระบุข้อเสนอแนะเพิ่มเติม"></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" aria-labelledby="summaryTitle">
-        <div class="section-header">
-          <span class="section-number">4</span>
-          <div>
-            <h2 id="summaryTitle">สรุปก่อนบันทึก</h2>
-            <p class="section-subtitle">ระบบจะคำนวณคะแนนจากคำตอบทั้ง 20 ข้อ</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="summary-strip">
-            <div class="summary-box">
-              <p class="summary-label">ตอบแล้ว</p>
-              <p id="answeredCount" class="summary-value">0/20</p>
-            </div>
-            <div class="summary-box">
-              <p class="summary-label">คะแนนรวม</p>
-              <p id="totalScore" class="summary-value">0</p>
-            </div>
-            <div class="summary-box">
-              <p class="summary-label">คะแนนเฉลี่ย</p>
-              <p id="averageScore" class="summary-value">0.00</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div class="action-bar">
+    <section class="section reveal" aria-labelledby="profileTitle">
+      <div class="section-header">
+        <span class="section-number">01</span>
         <div>
+          <h2 id="profileTitle">ข้อมูลส่วนบุคคลของบุคลากร</h2>
+          <p class="section-subtitle">ข้อมูลสำหรับวิเคราะห์ภาพรวมของผู้ตอบแบบประเมิน</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field field-wide">
+            <label for="name"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg> ชื่อ-สกุล</label>
+            <input id="name" name="name" type="text" autocomplete="name" placeholder="ระบุชื่อ-สกุล">
+          </div>
+          <div class="field">
+            <label for="gender"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg> เพศ</label>
+            <select id="gender" name="gender">
+              <option value="">เลือกเพศ</option>
+              <option value="ชาย">ชาย</option>
+              <option value="หญิง">หญิง</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="age"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> อายุ</label>
+            <input id="age" name="age" type="number" min="1" inputmode="numeric" placeholder="ปี">
+          </div>
+          <div class="field field-wide">
+            <label for="unit"><svg class="ico" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5"/></svg> หน่วยงาน</label>
+            <input id="unit" name="unit" type="text" placeholder="ระบุหน่วยงาน">
+          </div>
+          <div class="field">
+            <label for="position"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg> ตำแหน่ง</label>
+            <input id="position" name="position" type="text" placeholder="ระบุตำแหน่ง">
+          </div>
+          <div class="field">
+            <label for="edu"><svg class="ico" viewBox="0 0 24 24"><path d="m12 4 9 5-9 5-9-5z"/><path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg> ระดับการศึกษา</label>
+            <input id="edu" name="edu" type="text" placeholder="ระบุระดับการศึกษา">
+          </div>
+          <div class="field">
+            <label for="exp"><svg class="ico" viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-8"/><path d="M21 7v5h-5"/></svg> ประสบการณ์ทำงาน</label>
+            <input id="exp" name="exp" type="text" placeholder="เช่น 5 ปี">
+          </div>
+          <div class="field">
+            <label for="resexp"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg> ประสบการณ์วิจัย</label>
+            <input id="resexp" name="resexp" type="text" placeholder="เช่น 2 ปี">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" aria-labelledby="ratingTitle">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <div>
+          <h2 id="ratingTitle">แบบประเมินความพึงพอใจ</h2>
+          <p class="section-subtitle">คะแนน 5 หมายถึงมากที่สุด และ 1 หมายถึงน้อยที่สุด</p>
+        </div>
+        <div class="header-side">
+          <span class="pill" id="ratingProgressPill">0 / 20 ข้อ</span>
+        </div>
+      </div>
+      <div class="section-body">
+        <div id="questions" class="question-groups"></div>
+      </div>
+    </section>
+
+    <section class="section reveal" aria-labelledby="commentTitle">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <div>
+          <h2 id="commentTitle">ความคิดเห็นเพิ่มเติม</h2>
+          <p class="section-subtitle">ข้อมูลปลายเปิดสำหรับประกอบการอภิปรายผล</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field field-wide">
+            <label for="strength"><svg class="ico" viewBox="0 0 24 24"><path d="m12 2 2.9 6.3 6.8.8-5 4.7 1.3 6.8L12 17.3 6 20.6l1.3-6.8-5-4.7 6.8-.8z"/></svg> จุดเด่นของโครงการ</label>
+            <textarea id="strength" name="strength" placeholder="ระบุจุดเด่นของโครงการ"></textarea>
+          </div>
+          <div class="field field-wide">
+            <label for="problem"><svg class="ico" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg> ปัญหาและอุปสรรค</label>
+            <textarea id="problem" name="problem" placeholder="ระบุปัญหาและอุปสรรค"></textarea>
+          </div>
+          <div class="field field-wide">
+            <label for="suggest"><svg class="ico" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg> ข้อเสนอแนะเพิ่มเติม</label>
+            <textarea id="suggest" name="suggest" placeholder="ระบุข้อเสนอแนะเพิ่มเติม"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" aria-labelledby="summaryTitle">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <div>
+          <h2 id="summaryTitle">สรุปก่อนบันทึก</h2>
+          <p class="section-subtitle">ระบบคำนวณคะแนนแบบเรียลไทม์จากคำตอบทั้ง 20 ข้อ</p>
+        </div>
+        <div class="header-side">
+          <button id="clearDraftButton" class="button" type="button">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+            <span>ล้างแบบร่าง</span>
+          </button>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="summary-strip">
+          <div class="summary-gauge">
+            <div class="gauge">
+              <svg viewBox="0 0 104 104" width="104" height="104" aria-hidden="true">
+                <circle class="track" cx="52" cy="52" r="45"/>
+                <circle class="bar" id="gaugeBar" cx="52" cy="52" r="45"/>
+              </svg>
+              <span class="cap"><b id="gaugePercent">0%</b><span>ความคืบหน้า</span></span>
+            </div>
+            <div class="gauge-copy">
+              <h4 id="gaugeTitle">ยังไม่เริ่มตอบ</h4>
+              <p id="gaugeHint">เลือกคะแนนให้ครบทั้ง 20 ข้อเพื่อบันทึกผล</p>
+            </div>
+          </div>
+          <div class="summary-box">
+            <p class="summary-label"><svg class="ico" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></svg> ตอบแล้ว</p>
+            <p id="answeredCount" class="summary-value">0/20</p>
+          </div>
+          <div class="summary-box">
+            <p class="summary-label"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg> คะแนนรวม</p>
+            <p id="totalScore" class="summary-value">0</p>
+          </div>
+          <div class="summary-box">
+            <p class="summary-label"><svg class="ico" viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-8"/><path d="M21 7v5h-5"/></svg> คะแนนเฉลี่ย</p>
+            <p id="averageScore" class="summary-value">0.00</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footnote">ข้อมูลของท่านจะถูกใช้เพื่อการวิเคราะห์ผลในเชิงภาพรวมของงานวิจัยเท่านั้น</p>
+
+    <div class="dock" id="dock">
+      <div class="dock-progress">
+        <div class="dock-line">
+          <span>ความคืบหน้า <b id="dockCount">0/20</b></span>
           <p id="formStatus" class="status" role="status" aria-live="polite"></p>
           <div id="afterSaveActions" class="after-save">
-            <a id="dashboardLinkAfterSave" class="ghost-button" href="?page=dashboard">ดู Dashboard และบทวิเคราะห์</a>
+            <a id="dashboardLinkAfterSave" class="button" href="?page=dashboard">ดู Dashboard และบทวิเคราะห์</a>
           </div>
         </div>
-        <button id="submitButton" class="submit-button" type="submit">บันทึกข้อมูล</button>
+        <div class="dock-track"><div class="dock-fill" id="dockFill"></div></div>
       </div>
-    </form>
-  </div>
+      <div class="dock-actions">
+        <button id="jumpButton" class="button" type="button" title="ไปยังข้อที่ยังไม่ได้ตอบ">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14m0 0 6-6m-6 6-6-6"/></svg>
+          <span>ข้อที่ยังไม่ตอบ</span>
+        </button>
+        <button id="submitButton" class="button primary lg" type="submit">
+          <svg class="ico" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/></svg>
+          <span>บันทึกข้อมูล</span>
+        </button>
+      </div>
+    </div>
+  </form>
 </main>
+
+<div id="toast" class="toast" role="status" aria-live="polite">
+  <svg class="ico" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></svg>
+  <span id="toastText"></span>
+</div>
 
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzWHeku1zDMUFN9YMsf77ZIB_5LxnEqqrDU1UydIJxACH8jQDUxFt3rVmFKkdjzzmzL/exec";
@@ -734,6 +1244,10 @@ const questionGroups = [
   }
 ];
 
+const profileFields = ["name","gender","age","unit","position","edu","exp","resexp"];
+const commentFields = ["strength","problem","suggest"];
+const DRAFT_KEY = "evaluationDraft";
+
 const questions = questionGroups.flatMap(group => group.items);
 const questionRoot = document.getElementById("questions");
 const answeredCount = document.getElementById("answeredCount");
@@ -747,21 +1261,70 @@ const dashboardLinks = [
   document.getElementById("dashboardLink"),
   document.getElementById("dashboardLinkAfterSave")
 ];
+const ui = {
+  themeToggle:document.getElementById("themeToggle"),
+  themeIcon:document.getElementById("themeIcon"),
+  navbar:document.getElementById("navbar"),
+  scrollProgress:document.getElementById("scrollProgress"),
+  ratingProgressPill:document.getElementById("ratingProgressPill"),
+  gaugeBar:document.getElementById("gaugeBar"),
+  gaugePercent:document.getElementById("gaugePercent"),
+  gaugeTitle:document.getElementById("gaugeTitle"),
+  gaugeHint:document.getElementById("gaugeHint"),
+  dockCount:document.getElementById("dockCount"),
+  dockFill:document.getElementById("dockFill"),
+  jumpButton:document.getElementById("jumpButton"),
+  clearDraftButton:document.getElementById("clearDraftButton"),
+  toast:document.getElementById("toast"),
+  toastText:document.getElementById("toastText")
+};
+
+/* ============================================================
+   THEME
+   ============================================================ */
+const ICON_MOON = `<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>`;
+const ICON_SUN = `<path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/>`;
+
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme",theme);
+  ui.themeIcon.innerHTML = theme === "dark" ? ICON_MOON : ICON_SUN;
+  try{
+    window.localStorage.setItem("dashboardTheme",theme);
+  }catch(error){
+    /* ignore storage errors */
+  }
+}
+
+function readStoredTheme(){
+  try{
+    return window.localStorage.getItem("dashboardTheme");
+  }catch(error){
+    return null;
+  }
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function isAppsScriptHost(){
+  return (typeof google !== "undefined" && google.script)
+    || /script\.google\.com|googleusercontent\.com/.test(location.hostname);
+}
 
 function setupDashboardLinks(){
-  const dashboardUrl = location.protocol === "file:" ? "dashboard.html" : "?page=dashboard";
+  const dashboardUrl = isAppsScriptHost() ? "?page=dashboard" : "dashboard.html";
   dashboardLinks.forEach(link => link.href = dashboardUrl);
 }
 
 function renderQuestions(){
   let questionNumber = 1;
 
-  questionRoot.innerHTML = questionGroups.map(group => {
+  questionRoot.innerHTML = questionGroups.map((group,groupIndex) => {
     const start = questionNumber;
     const questionHtml = group.items.map(item => {
       const index = questionNumber++;
       return `
-        <div class="question">
+        <div class="question" id="question-${index}" data-question="${index}">
           <div class="question-text">
             <span class="question-index">${index}</span>
             <span>${item}</span>
@@ -770,7 +1333,7 @@ function renderQuestions(){
             ${[1,2,3,4,5].map(score => `
               <label class="rating-choice">
                 <input type="radio" name="q${index}" value="${score}">
-                <span class="rating-pill"><strong>${score}</strong>${ratingLabels[score]}</span>
+                <span class="rating-pill" data-score="${score}"><strong>${score}</strong>${ratingLabels[score]}</span>
               </label>
             `).join("")}
           </div>
@@ -780,10 +1343,17 @@ function renderQuestions(){
     const end = questionNumber - 1;
 
     return `
-      <article class="question-group">
+      <article class="question-group" data-group="${groupIndex}" data-start="${start}" data-end="${end}">
         <div class="group-title">
+          <span class="group-ring">
+            <svg viewBox="0 0 42 42" width="42" height="42" aria-hidden="true">
+              <circle class="t" cx="21" cy="21" r="17"/>
+              <circle class="b" cx="21" cy="21" r="17"/>
+            </svg>
+            <i>0/${group.items.length}</i>
+          </span>
           <h3>${group.title}</h3>
-          <span class="group-range">ข้อ ${start}-${end}</span>
+          <span class="group-range">ข้อ ${start}–${end}</span>
         </div>
         ${questionHtml}
       </article>
@@ -806,12 +1376,137 @@ function updateSummary(){
   const ratings = collectRatings();
   const answered = ratings.filter(Boolean).length;
   const sum = ratings.reduce((total,value) => total + value,0);
+  const total = questions.length;
+  const percent = Math.round(answered * 100 / total);
 
-  answeredCount.textContent = `${answered}/${questions.length}`;
+  answeredCount.textContent = `${answered}/${total}`;
   totalScore.textContent = sum;
-  averageScore.textContent = answered ? (sum / questions.length).toFixed(2) : "0.00";
+  averageScore.textContent = answered ? (sum / total).toFixed(2) : "0.00";
+
+  ui.dockCount.textContent = `${answered}/${total}`;
+  ui.dockFill.style.width = `${percent}%`;
+  ui.ratingProgressPill.textContent = `${answered} / ${total} ข้อ`;
+  ui.gaugePercent.textContent = `${percent}%`;
+
+  const circumference = 2 * Math.PI * 45;
+  ui.gaugeBar.style.strokeDasharray = String(circumference);
+  ui.gaugeBar.style.strokeDashoffset = String(circumference * (1 - answered / total));
+
+  if(!answered){
+    ui.gaugeTitle.textContent = "ยังไม่เริ่มตอบ";
+    ui.gaugeHint.textContent = "เลือกคะแนนให้ครบทั้ง 20 ข้อเพื่อบันทึกผล";
+  }else if(answered < total){
+    ui.gaugeTitle.textContent = `เหลืออีก ${total - answered} ข้อ`;
+    ui.gaugeHint.textContent = `คะแนนเฉลี่ยจากที่ตอบแล้ว ${(sum / answered).toFixed(2)} · ระดับ${levelText(sum / answered)}`;
+  }else{
+    ui.gaugeTitle.textContent = "ตอบครบทุกข้อแล้ว";
+    ui.gaugeHint.textContent = `คะแนนเฉลี่ย ${(sum / total).toFixed(2)} · ระดับ${levelText(sum / total)} — พร้อมบันทึก`;
+  }
+
+  ratings.forEach((score,index) => {
+    const row = document.getElementById(`question-${index + 1}`);
+    if(row){
+      row.classList.toggle("answered",Boolean(score));
+      if(score){
+        row.classList.remove("missing");
+      }
+    }
+  });
+
+  questionRoot.querySelectorAll(".question-group").forEach(group => {
+    const start = Number(group.dataset.start);
+    const end = Number(group.dataset.end);
+    const size = end - start + 1;
+    const done = ratings.slice(start - 1,end).filter(Boolean).length;
+    const ring = group.querySelector(".group-ring .b");
+    const label = group.querySelector(".group-ring i");
+    const ringLength = 2 * Math.PI * 17;
+
+    ring.style.strokeDasharray = String(ringLength);
+    ring.style.strokeDashoffset = String(ringLength * (1 - done / size));
+    label.textContent = `${done}/${size}`;
+    group.classList.toggle("done",done === size);
+  });
 }
 
+function levelText(average){
+  const value = Number(average || 0);
+  if(value >= 4.51){return "มากที่สุด"}
+  if(value >= 3.51){return "มาก"}
+  if(value >= 2.51){return "ปานกลาง"}
+  if(value >= 1.51){return "น้อย"}
+  return "น้อยที่สุด";
+}
+
+/* ============================================================
+   DRAFT
+   ============================================================ */
+let draftTimer = null;
+
+function saveDraft(){
+  window.clearTimeout(draftTimer);
+  draftTimer = window.setTimeout(() => {
+    const draft = {ratings:collectRatings(),fields:{}};
+    profileFields.concat(commentFields).forEach(id => {
+      draft.fields[id] = document.getElementById(id).value;
+    });
+    try{
+      window.localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    }catch(error){
+      /* ignore storage errors */
+    }
+  },400);
+}
+
+function restoreDraft(){
+  let draft = null;
+
+  try{
+    draft = JSON.parse(window.localStorage.getItem(DRAFT_KEY) || "null");
+  }catch(error){
+    draft = null;
+  }
+
+  if(!draft){
+    return;
+  }
+
+  Object.keys(draft.fields || {}).forEach(id => {
+    const element = document.getElementById(id);
+    if(element){
+      element.value = draft.fields[id];
+    }
+  });
+
+  (draft.ratings || []).forEach((score,index) => {
+    if(!score){
+      return;
+    }
+    const input = document.querySelector(`input[name=q${index + 1}][value="${score}"]`);
+    if(input){
+      input.checked = true;
+    }
+  });
+
+  const answered = (draft.ratings || []).filter(Boolean).length;
+  const hasFields = Object.keys(draft.fields || {}).some(id => String(draft.fields[id] || "").trim());
+
+  if(answered || hasFields){
+    showToast("กู้คืนแบบร่างล่าสุดแล้ว");
+  }
+}
+
+function clearDraft(){
+  try{
+    window.localStorage.removeItem(DRAFT_KEY);
+  }catch(error){
+    /* ignore storage errors */
+  }
+}
+
+/* ============================================================
+   SUBMIT
+   ============================================================ */
 function resolveGasUrl(){
   const configuredUrl = GAS_URL.trim();
 
@@ -890,6 +1585,31 @@ async function sendPayload(payload){
   return {status:"success"};
 }
 
+function focusQuestion(index){
+  const row = document.getElementById(`question-${index}`);
+  if(!row){
+    return;
+  }
+
+  row.classList.add("missing");
+  row.scrollIntoView({behavior:"smooth",block:"center"});
+  const firstInput = row.querySelector("input[type=radio]");
+  if(firstInput){
+    window.setTimeout(() => firstInput.focus({preventScroll:true}),420);
+  }
+}
+
+function jumpToFirstMissing(){
+  const missingIndex = collectRatings().findIndex(score => score === 0);
+
+  if(missingIndex < 0){
+    showToast("ตอบครบทุกข้อแล้ว");
+    return;
+  }
+
+  focusQuestion(missingIndex + 1);
+}
+
 async function submitForm(event){
   event.preventDefault();
 
@@ -898,35 +1618,108 @@ async function submitForm(event){
 
   if(missingIndex >= 0){
     setStatus(`กรุณาเลือกคะแนนข้อ ${missingIndex + 1} ก่อนบันทึก`,"error");
-    const firstMissing = document.querySelector(`input[name=q${missingIndex + 1}]`);
-    if(firstMissing){
-      firstMissing.focus();
-    }
+    showToast(`ยังไม่ได้ตอบข้อ ${missingIndex + 1}`,true);
+    focusQuestion(missingIndex + 1);
     return;
   }
 
   submitButton.disabled = true;
+  submitButton.classList.add("loading");
   afterSaveActions.classList.remove("show");
   setStatus("กำลังบันทึกข้อมูล...");
 
   try{
     await sendPayload(buildPayload());
+    clearDraft();
     evaluationForm.reset();
     updateSummary();
     afterSaveActions.classList.add("show");
-    setStatus("บันทึกข้อมูลเรียบร้อยแล้ว สามารถเปิด Dashboard เพื่อดูผลวิเคราะห์ล่าสุดได้","success");
+    setStatus("บันทึกข้อมูลเรียบร้อยแล้ว","success");
+    showToast("บันทึกข้อมูลเรียบร้อยแล้ว");
+    window.scrollTo({top:0,behavior:"smooth"});
   }catch(error){
     setStatus("บันทึกไม่สำเร็จ กรุณาตรวจสอบ URL และสิทธิ์ของ Google Apps Script Web App","error");
+    showToast("บันทึกไม่สำเร็จ",true);
   }finally{
     submitButton.disabled = false;
+    submitButton.classList.remove("loading");
   }
 }
 
+/* ============================================================
+   UI
+   ============================================================ */
+let toastTimer = null;
+
+function showToast(message,isError){
+  ui.toastText.textContent = message;
+  ui.toast.classList.toggle("bad",Boolean(isError));
+  ui.toast.classList.add("show");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => ui.toast.classList.remove("show"),2600);
+}
+
+function setupReveal(){
+  const targets = document.querySelectorAll(".reveal");
+
+  if(!("IntersectionObserver" in window)){
+    targets.forEach(target => target.classList.add("in"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("in");
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:.06,rootMargin:"0px 0px -40px 0px"});
+
+  targets.forEach(target => observer.observe(target));
+}
+
+function setupScrollUi(){
+  function update(){
+    const scrolled = window.scrollY;
+    const height = document.documentElement.scrollHeight - window.innerHeight;
+    ui.scrollProgress.style.width = `${height > 0 ? Math.min(100,scrolled * 100 / height) : 0}%`;
+    ui.navbar.classList.toggle("stuck",scrolled > 12);
+  }
+
+  window.addEventListener("scroll",update,{passive:true});
+  window.addEventListener("resize",update);
+  update();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+applyTheme(readStoredTheme() || "light");
 setupDashboardLinks();
 renderQuestions();
+restoreDraft();
 updateSummary();
-questionRoot.addEventListener("change",updateSummary);
+setupReveal();
+setupScrollUi();
+
+questionRoot.addEventListener("change",() => {
+  updateSummary();
+  saveDraft();
+});
+evaluationForm.addEventListener("input",saveDraft);
 evaluationForm.addEventListener("submit",submitForm);
+ui.themeToggle.addEventListener("click",() => {
+  applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+});
+ui.jumpButton.addEventListener("click",jumpToFirstMissing);
+ui.clearDraftButton.addEventListener("click",() => {
+  clearDraft();
+  evaluationForm.reset();
+  updateSummary();
+  setStatus("");
+  showToast("ล้างแบบร่างแล้ว");
+});
 </script>
 </body>
 </html>
