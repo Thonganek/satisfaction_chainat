@@ -1567,9 +1567,222 @@ html[data-theme="light"]{
   .metric-grid{grid-template-columns:1fr}
   .metric.feature{flex-direction:row}
 }
+
+/* ============================================================
+   LOGIN GATE
+   ============================================================ */
+body.locked .navbar,
+body.locked .page,
+body.locked .to-top,
+body.locked .progress-rail{display:none}
+
+.gate{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:
+    radial-gradient(90% 70% at 50% 0%,var(--glow),transparent 60%),
+    var(--bg);
+  opacity:1;
+  transition:opacity .45s var(--ease),visibility .45s;
+}
+
+.gate.hidden{opacity:0;visibility:hidden}
+
+.gate-card{
+  width:min(420px,100%);
+  padding:34px 30px 30px;
+  border:1px solid var(--line);
+  border-radius:var(--r-xl);
+  background:var(--glass-2);
+  backdrop-filter:blur(22px) saturate(140%);
+  -webkit-backdrop-filter:blur(22px) saturate(140%);
+  box-shadow:var(--shadow-lg);
+  text-align:center;
+}
+
+.gate-card.shake{animation:gateShake .45s var(--ease)}
+
+@keyframes gateShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-9px)}
+  60%{transform:translateX(7px)}
+}
+
+.gate-mark{
+  display:grid;
+  place-items:center;
+  width:60px;
+  height:60px;
+  margin:0 auto 16px;
+  border-radius:20px;
+  background:var(--c1);
+  box-shadow:0 16px 34px -14px var(--glow);
+}
+
+.gate-mark svg{
+  width:26px;
+  height:26px;
+  stroke:#fff;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.gate-card h1{
+  margin:0 0 6px;
+  font-size:1.3rem;
+  font-weight:700;
+  letter-spacing:-.2px;
+}
+
+.gate-card p.sub{
+  margin:0 0 22px;
+  color:var(--muted);
+  font-size:.87rem;
+}
+
+.gate-field{
+  display:grid;
+  gap:6px;
+  margin-bottom:12px;
+  text-align:left;
+}
+
+.gate-field label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--ink-2);
+  font-size:.82rem;
+  font-weight:600;
+}
+
+.gate-field label svg{
+  width:14px;
+  height:14px;
+  stroke:var(--c1);
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.gate-input{position:relative}
+
+.gate-field input{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--line-strong);
+  border-radius:13px;
+  background:var(--glass-hi);
+  color:var(--ink);
+  outline:0;
+  font:inherit;
+  font-size:.94rem;
+  transition:border-color .22s ease,box-shadow .22s ease;
+}
+
+.gate-field input:focus{border-color:var(--c1);box-shadow:0 0 0 4px var(--glow)}
+
+.gate-toggle{
+  position:absolute;
+  top:50%;
+  right:8px;
+  transform:translateY(-50%);
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+}
+
+.gate-toggle:hover{color:var(--c1)}
+
+.gate-toggle svg{
+  width:17px;
+  height:17px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.gate-error{
+  min-height:22px;
+  margin:2px 0 10px;
+  color:var(--c5);
+  font-size:.82rem;
+  font-weight:600;
+}
+
+.gate-card .button{width:100%;min-height:48px}
+
+.gate-note{
+  margin:18px 0 0;
+  color:var(--muted);
+  font-size:.76rem;
+}
+
+.gate-note a{color:var(--accent-ink);font-weight:600}
+
+@media (max-width:520px){
+  .gate-card{padding:28px 20px 24px;border-radius:22px}
+  .gate-field input{font-size:16px}
+}
 </style>
 </head>
-<body class="is-loading">
+<body class="is-loading locked">
+
+<div id="gate" class="gate">
+  <form id="gateForm" class="gate-card" autocomplete="off">
+    <div class="gate-mark">
+      <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    </div>
+    <h1>เข้าสู่ระบบ</h1>
+    <p class="sub">Dashboard นี้แสดงข้อมูลผู้ตอบ ความคิดเห็น และชื่อผู้แสดงความคิดเห็น<br>กรุณายืนยันตัวตนก่อนเข้าดู</p>
+
+    <div class="gate-field">
+      <label for="gateUser">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
+        ชื่อผู้ใช้
+      </label>
+      <input id="gateUser" type="text" placeholder="ชื่อผู้ใช้" autocomplete="username" required>
+    </div>
+
+    <div class="gate-field">
+      <label for="gatePass">
+        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        รหัสผ่าน
+      </label>
+      <div class="gate-input">
+        <input id="gatePass" type="password" placeholder="รหัสผ่าน" autocomplete="current-password" required>
+        <button id="gateToggle" class="gate-toggle" type="button" aria-label="แสดงรหัสผ่าน">
+          <svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <p id="gateError" class="gate-error" role="alert"></p>
+
+    <button class="button primary" type="submit">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg>
+      <span>เข้าสู่ระบบ</span>
+    </button>
+
+    <p class="gate-note">ผู้ตอบแบบประเมินไม่ต้องเข้าสู่ระบบ · <a id="gateFormLink" href="index.html">ไปที่แบบประเมิน</a></p>
+  </form>
+</div>
+
 
 <div class="ambient" aria-hidden="true">
   <div class="orb a"></div>
@@ -1599,6 +1812,9 @@ html[data-theme="light"]{
     <div class="nav-actions">
       <button id="themeToggle" class="button icon" type="button" title="สลับธีมสว่าง/มืด" aria-label="สลับธีม">
         <svg class="ico" id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button id="logoutButton" class="button icon" type="button" title="ออกจากระบบ" aria-label="ออกจากระบบ">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
       </button>
       <button id="printButton" class="button icon" type="button" title="พิมพ์ / บันทึกเป็น PDF" aria-label="พิมพ์">
         <svg class="ico" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4v-6h16v6h-2M8 14h8v7H8z"/></svg>
@@ -1903,6 +2119,14 @@ const state = {
 
 const refs = {
   status:document.getElementById("status"),
+  gate:document.getElementById("gate"),
+  gateForm:document.getElementById("gateForm"),
+  gateUser:document.getElementById("gateUser"),
+  gatePass:document.getElementById("gatePass"),
+  gateToggle:document.getElementById("gateToggle"),
+  gateError:document.getElementById("gateError"),
+  gateFormLink:document.getElementById("gateFormLink"),
+  logoutButton:document.getElementById("logoutButton"),
   formLink:document.getElementById("formLink"),
   refreshButton:document.getElementById("refreshButton"),
   totalResponses:document.getElementById("totalResponses"),
@@ -2781,6 +3005,98 @@ function setupSpotlight(){
   },{passive:true});
 }
 
+
+/* ============================================================
+   LOGIN GATE
+   ============================================================
+   Note: this only hides the dashboard in the browser. The file is
+   public, so the credentials below are readable by anyone who views
+   the source. Move the check into the Apps Script Web App if the data
+   genuinely needs protecting.
+   ============================================================ */
+const CREDENTIALS = {username:"admin",password:"1234"};
+const AUTH_KEY = "dashboardAuth";
+
+function isAuthenticated(){
+  try{
+    return window.sessionStorage.getItem(AUTH_KEY) === "1";
+  }catch(error){
+    return false;
+  }
+}
+
+function rememberAuth(value){
+  try{
+    if(value){
+      window.sessionStorage.setItem(AUTH_KEY,"1");
+    }else{
+      window.sessionStorage.removeItem(AUTH_KEY);
+    }
+  }catch(error){
+    /* ignore storage errors */
+  }
+}
+
+function unlockDashboard(instant){
+  document.body.classList.remove("locked");
+
+  if(instant){
+    refs.gate.style.display = "none";
+  }else{
+    refs.gate.classList.add("hidden");
+    window.setTimeout(() => {
+      refs.gate.style.display = "none";
+    },500);
+  }
+
+  loadDashboard();
+}
+
+function handleGateSubmit(event){
+  event.preventDefault();
+
+  const username = refs.gateUser.value.trim();
+  const password = refs.gatePass.value;
+
+  if(username === CREDENTIALS.username && password === CREDENTIALS.password){
+    rememberAuth(true);
+    refs.gateError.textContent = "";
+    unlockDashboard();
+    return;
+  }
+
+  refs.gateError.textContent = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+  refs.gatePass.value = "";
+  refs.gatePass.focus();
+  refs.gateForm.classList.remove("shake");
+  void refs.gateForm.offsetWidth;
+  refs.gateForm.classList.add("shake");
+}
+
+function logout(){
+  rememberAuth(false);
+  location.reload();
+}
+
+function setupGate(){
+  refs.gateFormLink.href = isAppsScriptHost() ? "?" : "index.html";
+  refs.gateForm.addEventListener("submit",handleGateSubmit);
+  refs.logoutButton.addEventListener("click",logout);
+  refs.gateToggle.addEventListener("click",() => {
+    const showing = refs.gatePass.type === "text";
+    refs.gatePass.type = showing ? "password" : "text";
+    refs.gateToggle.setAttribute("aria-label",showing ? "แสดงรหัสผ่าน" : "ซ่อนรหัสผ่าน");
+    refs.gatePass.focus();
+  });
+
+  if(isAuthenticated()){
+    unlockDashboard(true);
+    return;
+  }
+
+  refs.gateUser.focus();
+}
+
 /* ============================================================
    INIT
    ============================================================ */
@@ -2799,7 +3115,7 @@ refs.copyExecutiveButton.addEventListener("click",() => copyText(executiveText()
 refs.copyChapterButton.addEventListener("click",() => copyText(chapterText(),refs.copyChapterStatus));
 
 renderDashboard(createEmptyDashboard());
-loadDashboard();
+setupGate();
 </script>
 </body>
 </html>
